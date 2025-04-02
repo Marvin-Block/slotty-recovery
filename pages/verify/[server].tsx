@@ -129,7 +129,7 @@ export default function Verify({ server, status, err, errStack, captcha }: any) 
                 {(err !== undefined && err === "403") && (
                     <>
                         {' '}
-                        <Link href={`https://restr.co/perms`}>Click here</Link> to fix this issue.
+                        <Link href={`https://slotty.cc/perms`}>Click here</Link> to fix this issue.
                     </>
                 )}
             </Alert>

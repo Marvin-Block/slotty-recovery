@@ -85,7 +85,7 @@ export default function NavBar({ ...props }: any) {
                             <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 0, cursor: "pointer", fontWeight: "600" }} onClick={() => { router.push("/dashboard") }}>
                                 SlottyRecovery
                             </Typography>
-                            <ButtonBase disableRipple onClick={() => { window.open("https://restr.co/discord", "_blank") }} sx={{ display: "flex", alignItems: "center", justifyContent: "center", borderRadius: "14px", padding: "8px 14px", background: "#121212", color: "#ffffff", transition: "all 0.2s ease-in-out", "&:hover": { background: "#1e1e1e" } }}>
+                            <ButtonBase disableRipple onClick={() => { window.open("https://slotty.cc/discord", "_blank") }} sx={{ display: "flex", alignItems: "center", justifyContent: "center", borderRadius: "14px", padding: "8px 14px", background: "#121212", color: "#ffffff", transition: "all 0.2s ease-in-out", "&:hover": { background: "#1e1e1e" } }}>
                                 <Typography variant="body1">Need Help?</Typography>
                             </ButtonBase>
                         </Stack>
@@ -203,7 +203,7 @@ export default function NavBar({ ...props }: any) {
                                 })}
                             </List>
                         </Box>
-                        {/* <Button variant="contained" color="secondary" href="https://restr.co/discord" target="_blank" sx={{ m: 1 }}>
+                        {/* <Button variant="contained" color="secondary" href="https://slotty.cc/discord" target="_blank" sx={{ m: 1 }}>
                             Contact Support
                         </Button> */}
                     </Stack>

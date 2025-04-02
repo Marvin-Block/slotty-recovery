@@ -189,7 +189,7 @@ export default function CustomBots() {
 
                     <Alert severity="warning" sx={{ mt: 2 }}>
                         <Typography variant="body1" sx={{ color: "text.secondary" }}>It is recommended to create a new Discord account for your bot. This is in case your Main account gets banned, your bot will still be able to run.</Typography>
-                        <Link href="https://restr.co/secure" target="_blank" rel="noopener noreferrer">
+                        <Link href="https://slotty.cc/secure" target="_blank" rel="noopener noreferrer">
                             {!isMobile ?
                                 <Alert severity="info" sx={{ mt: 2, cursor: "pointer", "&:hover": { borderColor: "#ffffff" }, transition: "0.2s" }}>
                                     <Typography variant="body1" sx={{ color: "text.primary" }}>Secure your Bot: A step-by-step guide</Typography>

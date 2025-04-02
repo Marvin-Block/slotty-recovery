@@ -70,13 +70,13 @@ const handler = async(_: NextApiRequest, res: NextApiResponse, interaction: any)
             if (!serverInfo || serverInfo === null) return res.status(200).json({ ...BASE_RESPONSE, data: { content: "Server has not been found on dashboard", flags: InteractionResponseFlags.EPHEMERAL } });
 
             var serverOwner = await prisma.accounts.findUnique({ where: { id: serverInfo.ownerId, userId: interaction.member.user.id } });
-            if (!serverOwner) return res.status(200).json({ ...BASE_RESPONSE, data: { content: "Discord Account is not linked to RC Account, link here: https://restr.co/acc", flags: InteractionResponseFlags.EPHEMERAL } });
+            if (!serverOwner) return res.status(200).json({ ...BASE_RESPONSE, data: { content: "Discord Account is not linked to RC Account, link here: https://slotty.cc/acc", flags: InteractionResponseFlags.EPHEMERAL } });
 
             var servers = await prisma.servers.findMany({ where: { AND: [ { ownerId: serverOwner.id }, { customBotId: customBot.id } ] } });
             if (servers.length === 0) return res.status(200).json({ ...BASE_RESPONSE, data: { content: "No servers found", flags: InteractionResponseFlags.EPHEMERAL } });
 
             if (serverInfo.ownerId !== customBot.ownerId) return res.status(200).json({ ...BASE_RESPONSE, data: { content: "Bot and server owners do not match", flags: InteractionResponseFlags.EPHEMERAL } });
-            if (BigInt(serverOwner.userId as any) !== BigInt(interaction.member.user.id)) return res.status(200).json({ ...BASE_RESPONSE, data: { content: "You are unable to run this command, contact an Administrator or add your Discord ID to [the dashboard](https://restr.co/account)", flags: InteractionResponseFlags.EPHEMERAL } });
+            if (BigInt(serverOwner.userId as any) !== BigInt(interaction.member.user.id)) return res.status(200).json({ ...BASE_RESPONSE, data: { content: "You are unable to run this command, contact an Administrator or add your Discord ID to [the dashboard](https://slotty.cc/account)", flags: InteractionResponseFlags.EPHEMERAL } });
 
             var roles = await axios.get(`https://discord.com/api/v10/guilds/${interaction.guild_id}/roles`, { headers: { Authorization: `Bot ${customBot.botToken}` }, proxy: false, httpsAgent: new HttpsProxyAgent(`https://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@zproxy.lum-superproxy.io:22225`) })
 
@@ -252,7 +252,7 @@ const handler = async(_: NextApiRequest, res: NextApiResponse, interaction: any)
             if (!serverInfo || serverInfo === null) return res.status(200).json({ ...BASE_RESPONSE, data: { content: "Server has not been found on dashboard", flags: InteractionResponseFlags.EPHEMERAL } });
 
             var serverOwner = await prisma.accounts.findUnique({ where: { id: serverInfo.ownerId, userId: interaction.member.user.id } });
-            if (!serverOwner) return res.status(200).json({ ...BASE_RESPONSE, data: { content: "Discord Account is not linked to RC Account, link here: https://restr.co/acc", flags: InteractionResponseFlags.EPHEMERAL } });
+            if (!serverOwner) return res.status(200).json({ ...BASE_RESPONSE, data: { content: "Discord Account is not linked to RC Account, link here: https://slotty.cc/acc", flags: InteractionResponseFlags.EPHEMERAL } });
 
             var userId = options.find((o: any) => o.name == "user_id")?.value;
             var user   = options.find((o: any) => o.name == "user")?.value;
@@ -283,7 +283,7 @@ const handler = async(_: NextApiRequest, res: NextApiResponse, interaction: any)
             if (!serverInfo || serverInfo === null) return res.status(200).json({ ...BASE_RESPONSE, data: { content: "Server has not been found on dashboard", flags: InteractionResponseFlags.EPHEMERAL } });
 
             var serverOwner = await prisma.accounts.findUnique({ where: { id: serverInfo.ownerId, userId: interaction.member.user.id } });
-            if (!serverOwner) return res.status(200).json({ ...BASE_RESPONSE, data: { content: "Discord Account is not linked to RC Account, link here: https://restr.co/acc", flags: InteractionResponseFlags.EPHEMERAL } });
+            if (!serverOwner) return res.status(200).json({ ...BASE_RESPONSE, data: { content: "Discord Account is not linked to RC Account, link here: https://slotty.cc/acc", flags: InteractionResponseFlags.EPHEMERAL } });
 
             var userId = options.find((o: any) => o.name == "user_id")?.value;
             var user   = options.find((o: any) => o.name == "user")?.value;
@@ -427,7 +427,7 @@ const handler = async(_: NextApiRequest, res: NextApiResponse, interaction: any)
 
             var serverOwner = await prisma.accounts.findUnique({ where: { id: serverInfo.ownerId, userId: interaction.member.user.id } });
             if (!serverOwner) return res.status(200).json({ type: 4, data: { content: "You are not the owner of this server", flags: InteractionResponseFlags.EPHEMERAL } });
-            if (BigInt(serverOwner.userId as any) !== BigInt(interaction.member.user.id)) return res.status(200).json({ ...BASE_RESPONSE, data: { content: "You are unable to run this command, contact an Administrator or add your Discord ID to [the dashboard](https://restr.co/account)", flags: InteractionResponseFlags.EPHEMERAL } });
+            if (BigInt(serverOwner.userId as any) !== BigInt(interaction.member.user.id)) return res.status(200).json({ ...BASE_RESPONSE, data: { content: "You are unable to run this command, contact an Administrator or add your Discord ID to [the dashboard](https://slotty.cc/account)", flags: InteractionResponseFlags.EPHEMERAL } });
 
             var bot = await prisma.customBots.findUnique({ where: { id: serverInfo.customBotId } });
             if (!bot) return res.status(200).json({ type: 4, data: { content: "Bot not found", flags: InteractionResponseFlags.EPHEMERAL } });
