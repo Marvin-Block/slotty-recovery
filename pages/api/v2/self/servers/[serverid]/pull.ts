@@ -1,11 +1,10 @@
-import { NextApiRequest, NextApiResponse } from "next";
-import { HttpsProxyAgent } from "https-proxy-agent";
 import { accounts, members, migrations } from "@prisma/client";
+import { NextApiRequest, NextApiResponse } from "next";
 
 import { prisma } from "../../../../../../src/db";
-import { addMember, addRole, refreshToken, shuffle, sleep } from "../../../../../../src/Migrate";
-import { getBrowser, getIPAddress, getPlatform, getXTrack } from "../../../../../../src/getIPAddress";
 import { formatEstimatedTime } from "../../../../../../src/functions";
+import { getIPAddress, getXTrack } from "../../../../../../src/getIPAddress";
+import { addMember, addRole, refreshToken, shuffle } from "../../../../../../src/Migrate";
 
 import axios from "axios";
 import withAuthentication from "../../../../../../src/withAuthentication";
@@ -103,7 +102,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse, user: accounts
                 "User-Agent": "DiscordBot (https://discord.js.org, 0.0.0)",
             },
             proxy: false,
-            httpsAgent: new HttpsProxyAgent(`https://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@zproxy.lum-superproxy.io:22225`),
+            // TODO: FIX HTTPS
+            // httpsAgent: new HttpsProxyAgent(`https://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@zproxy.lum-superproxy.io:22225`),
             validateStatus: () => true,
         }).then((response) => {
             if (response.status !== 200) return res.status(400).json({ success: false, message: "Invalid bot token", code: 50401 });
@@ -118,7 +118,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse, user: accounts
                 "User-Agent": "DiscordBot (https://discord.js.org, 0.0.0)",
             },
             proxy: false,
-            httpsAgent: new HttpsProxyAgent(`https://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@zproxy.lum-superproxy.io:22225`),
+            // TODO: FIX HTTPS
+            // httpsAgent: new HttpsProxyAgent(`https://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@zproxy.lum-superproxy.io:22225`),
             validateStatus: () => true,
         }).then((resp) => {
             if (resp?.status !== 200 || resp?.status != 200) return res.status(400).json({ success: false, message: "Discord server not found, invite bot or try again.", code: 500404 });
@@ -138,7 +139,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse, user: accounts
                     "User-Agent": "DiscordBot (https://discord.js.org, 0.0.0)",
                 },
                 proxy: false,
-                httpsAgent: new HttpsProxyAgent(`https://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@zproxy.lum-superproxy.io:22225`),
+                // TODO: FIX HTTPS
+                // httpsAgent: new HttpsProxyAgent(`https://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@zproxy.lum-superproxy.io:22225`),
                 validateStatus: () => true,
             }).then((resp) => {
                 if (resp?.status === 403 || resp?.status == 403) return res.status(400).json({ success: false, message: "Bot doesn't have permissions to give verified role", code: 500403 });
@@ -163,7 +165,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse, user: accounts
                 "Pragma": "no-cache"
             },
             proxy: false,
-            httpsAgent: new HttpsProxyAgent(`https://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@zproxy.lum-superproxy.io:22225`),
+            // TODO: FIX HTTPS
+            // httpsAgent: new HttpsProxyAgent(`https://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@zproxy.lum-superproxy.io:22225`),
             validateStatus: () => true,
         });
                 
@@ -329,7 +332,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse, user: accounts
                 },
                 {
                     proxy: false, 
-                    httpsAgent: new HttpsProxyAgent(`https://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@zproxy.lum-superproxy.io:22225`)
+                    // TODO: FIX HTTPS
+                    // httpsAgent: new HttpsProxyAgent(`https://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@zproxy.lum-superproxy.io:22225`)
                 }).catch(async (err) => {
                     if (err?.response?.status === 404 && server.webhook !== null) {
                         console.error(`${server.webhook.split("/")[5]} Webhook not found (webhook removed from config)`);

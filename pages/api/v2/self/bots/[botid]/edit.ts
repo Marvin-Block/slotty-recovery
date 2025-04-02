@@ -1,14 +1,13 @@
-import { NextApiRequest, NextApiResponse } from "next";
-import { HttpsProxyAgent } from "https-proxy-agent";
 import { accounts } from "@prisma/client";
+import { NextApiRequest, NextApiResponse } from "next";
 
-import dotenv from "dotenv";
 import axios from "axios";
+import dotenv from "dotenv";
 dotenv.config({ path: "../../" });
 
 import { prisma } from "../../../../../../src/db";
-import withAuthentication from "../../../../../../src/withAuthentication";
 import { createRedisInstance } from "../../../../../../src/Redis";
+import withAuthentication from "../../../../../../src/withAuthentication";
 
 const redis = createRedisInstance();
 
@@ -64,7 +63,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse, user: accounts
                     },
                     validateStatus: () => true,
                     proxy: false, 
-                    httpsAgent: new HttpsProxyAgent(`https://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@zproxy.lum-superproxy.io:22225`)
+                    // TODO: FIX HTTPS
+                    // httpsAgent: new HttpsProxyAgent(`https://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@zproxy.lum-superproxy.io:22225`)
                 });
 
                 if (botData.status != 200) return res.status(400).json({ success: false, message: "Invalid Bot Token" });

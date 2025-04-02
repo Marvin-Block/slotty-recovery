@@ -1,5 +1,4 @@
 import axios from "axios";
-import { HttpsProxyAgent } from "https-proxy-agent";
 import { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -14,7 +13,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 },
                 validateStatus: () => true,
                 proxy: false,
-                httpsAgent: new HttpsProxyAgent(`https://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@zproxy.lum-superproxy.io:22225`)
+                // TODO: FIX HTTPS
+                // httpsAgent: new HttpsProxyAgent(`https://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@zproxy.lum-superproxy.io:22225`)
             }).then(async (response) => {
                 return res.status(200).json(response.data);
             }).catch((error) => {

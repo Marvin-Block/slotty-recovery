@@ -1,10 +1,9 @@
+import axios from "axios";
+import { verify } from "jsonwebtoken";
 import { NextApiRequest, NextApiResponse } from "next";
 import { exchange, resolveUser } from "../../src/Migrate";
 import { prisma } from "../../src/db";
 import { getIPAddress } from "../../src/getIPAddress";
-import { verify } from "jsonwebtoken";
-import axios from "axios";
-import { HttpsProxyAgent } from "https-proxy-agent";
 
 function handler(req: NextApiRequest, res: NextApiResponse) {
     let code: any = null;
@@ -124,7 +123,8 @@ function handler(req: NextApiRequest, res: NextApiResponse) {
                     },
                     validateStatus: () => true,
                     proxy: false,
-                    httpsAgent: new HttpsProxyAgent(`https://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@zproxy.lum-superproxy.io:22225`),
+                    // TODO: FIX HTTPS
+                    // httpsAgent: new HttpsProxyAgent(`https://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@zproxy.lum-superproxy.io:22225`),
                 }).catch((err) => { console.error(err); });
 
                 return res.status(200).json({ error: false, message: "Successfully linked your account" });

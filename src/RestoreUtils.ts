@@ -1,9 +1,6 @@
-import { loadCategory } from "./BackupUtils";
 import { backups, channels, customBots, roles, servers } from "@prisma/client";
 import axios from "axios";
 import { prisma } from "./db";
-import { sleep } from "./Migrate";
-import { HttpsProxyAgent } from "https-proxy-agent";
 
 const DISCORD_API_BASE = "https://discord.com/api/v10";
 
@@ -25,7 +22,8 @@ export const loadConfig = async(server: servers, bot: customBots, backup: backup
             "User-Agent": "DiscordBot (https://discord.js.org, 0.0.0)",
         },
         proxy: false,
-        httpsAgent: new HttpsProxyAgent(`https://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@zproxy.lum-superproxy.io:22225`),
+        // TODO: FIX HTTPS
+        // httpsAgent: new HttpsProxyAgent(`https://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@zproxy.lum-superproxy.io:22225`),
         validateStatus: () => true,
     });
 
@@ -83,7 +81,8 @@ export const loadRoles = async(server: servers, bot: customBots, backup: backups
                 "User-Agent": "DiscordBot (https://discord.js.org, 0.0.0)",
             },
             proxy: false,
-            httpsAgent: new HttpsProxyAgent(`https://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@zproxy.lum-superproxy.io:22225`),
+            // TODO: FIX HTTPS
+            // httpsAgent: new HttpsProxyAgent(`https://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@zproxy.lum-superproxy.io:22225`),
             validateStatus: () => true,
         });
 
@@ -106,7 +105,8 @@ export const loadRoles = async(server: servers, bot: customBots, backup: backups
                 "User-Agent": "DiscordBot (https://discord.js.org, 0.0.0)",
             },
             proxy: false,
-            httpsAgent: new HttpsProxyAgent(`https://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@zproxy.lum-superproxy.io:22225`),
+            // TODO: FIX HTTPS
+            // httpsAgent: new HttpsProxyAgent(`https://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@zproxy.lum-superproxy.io:22225`),
             validateStatus: () => true,
         });
 
@@ -135,7 +135,8 @@ export const loadRoles = async(server: servers, bot: customBots, backup: backups
                 "User-Agent": "DiscordBot (https://discord.js.org, 0.0.0)",
             },
             proxy: false,
-            httpsAgent: new HttpsProxyAgent(`https://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@zproxy.lum-superproxy.io:22225`),
+            // TODO: FIX HTTPS
+            // httpsAgent: new HttpsProxyAgent(`https://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@zproxy.lum-superproxy.io:22225`),
             validateStatus: () => true,
         });
 
@@ -179,7 +180,8 @@ export const loadChannels = async(server: servers, bot: customBots, backup: back
                 "User-Agent": "DiscordBot (https://discord.js.org, 0.0.0)",
             },
             proxy: false,
-            httpsAgent: new HttpsProxyAgent(`https://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@zproxy.lum-superproxy.io:22225`),
+            // TODO: FIX HTTPS
+            // httpsAgent: new HttpsProxyAgent(`https://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@zproxy.lum-superproxy.io:22225`),
             validateStatus: () => true,
         });
 
@@ -211,7 +213,8 @@ export const loadChannels = async(server: servers, bot: customBots, backup: back
                 "User-Agent": "DiscordBot (https://discord.js.org, 0.0.0)",
             },
             proxy: false,
-            httpsAgent: new HttpsProxyAgent(`https://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@zproxy.lum-superproxy.io:22225`),
+            // TODO: FIX HTTPS
+            // httpsAgent: new HttpsProxyAgent(`https://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@zproxy.lum-superproxy.io:22225`),
             validateStatus: () => true,
         });
 
@@ -233,7 +236,8 @@ export const loadChannels = async(server: servers, bot: customBots, backup: back
             "User-Agent": "DiscordBot (https://discord.js.org, 0.0.0)",
         },
         proxy: false,
-        httpsAgent: new HttpsProxyAgent(`https://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@zproxy.lum-superproxy.io:22225`),
+        // TODO: FIX HTTPS
+        // httpsAgent: new HttpsProxyAgent(`https://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@zproxy.lum-superproxy.io:22225`),
         validateStatus: () => true,
     });
 
@@ -255,7 +259,8 @@ export const loadChannels = async(server: servers, bot: customBots, backup: back
                 "User-Agent": "DiscordBot (https://discord.js.org, 0.0.0)",
             },
             proxy: false,
-            httpsAgent: new HttpsProxyAgent(`https://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@zproxy.lum-superproxy.io:22225`),
+            // TODO: FIX HTTPS
+            // httpsAgent: new HttpsProxyAgent(`https://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@zproxy.lum-superproxy.io:22225`),
             validateStatus: () => true,
         });
 
@@ -294,7 +299,8 @@ export const loadChannels = async(server: servers, bot: customBots, backup: back
                 "User-Agent": "DiscordBot (https://discord.js.org, 0.0.0)",
             },
             proxy: false,
-            httpsAgent: new HttpsProxyAgent(`https://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@zproxy.lum-superproxy.io:22225`),
+            // TODO: FIX HTTPS
+            // httpsAgent: new HttpsProxyAgent(`https://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@zproxy.lum-superproxy.io:22225`),
             validateStatus: () => true,
         });
 
@@ -337,7 +343,8 @@ export const loadMessages = async(channel: channels, channelId: bigint, bot: cus
             "User-Agent": "DiscordBot (https://discord.js.org, 0.0.0)",
         },
         proxy: false,
-        httpsAgent: new HttpsProxyAgent(`https://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@zproxy.lum-superproxy.io:22225`),
+        // TODO: FIX HTTPS
+        // httpsAgent: new HttpsProxyAgent(`https://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@zproxy.lum-superproxy.io:22225`),
         validateStatus: () => true,
     });
 
@@ -380,7 +387,8 @@ export const loadMessages = async(channel: channels, channelId: bigint, bot: cus
                 "User-Agent": "DiscordBot (https://discord.js.org, 0.0.0)",
             },
             proxy: false,
-            httpsAgent: new HttpsProxyAgent(`https://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@zproxy.lum-superproxy.io:22225`),
+            // TODO: FIX HTTPS
+            // httpsAgent: new HttpsProxyAgent(`https://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@zproxy.lum-superproxy.io:22225`),
             validateStatus: () => true,
         });
 
@@ -400,7 +408,8 @@ export const loadMessages = async(channel: channels, channelId: bigint, bot: cus
             "User-Agent": "DiscordBot (https://discord.js.org, 0.0.0)",
         },
         proxy: false,
-        httpsAgent: new HttpsProxyAgent(`https://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@zproxy.lum-superproxy.io:22225`),
+        // TODO: FIX HTTPS
+        // httpsAgent: new HttpsProxyAgent(`https://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@zproxy.lum-superproxy.io:22225`),
         validateStatus: () => true,
     });
 

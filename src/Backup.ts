@@ -1,6 +1,4 @@
 import axios from "axios";
-import { Guild } from "discord.js";
-import { HttpsProxyAgent } from "https-proxy-agent";
 import {
     generateKey,
     getChannels,
@@ -54,7 +52,8 @@ export const createBackup = async (guildId: bigint, options: { roles: boolean, c
                     "User-Agent": "DiscordBot (https://discord.js.org, 0.0.0)",
                 },
                 proxy: false,
-                httpsAgent: new HttpsProxyAgent(`https://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@zproxy.lum-superproxy.io:22225`),
+                // TODO: FIX HTTPS
+                // httpsAgent: new HttpsProxyAgent(`https://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@zproxy.lum-superproxy.io:22225`),
                 validateStatus: () => true,
             });
 

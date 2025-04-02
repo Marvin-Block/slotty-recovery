@@ -1,12 +1,11 @@
-import { addMember, addRole, refreshTokenAddDB } from "../../../../src/Migrate";
+import { accounts } from "@prisma/client";
+import axios from "axios";
 import { NextApiRequest, NextApiResponse } from "next";
 import { prisma } from "../../../../src/db";
+import { addMember, addRole, refreshTokenAddDB } from "../../../../src/Migrate";
 import { ProxyCheck } from "../../../../src/proxycheck";
-import { HttpsProxyAgent } from "https-proxy-agent";
-import { accounts } from "@prisma/client";
 import { createRedisInstance } from "../../../../src/Redis";
 import withAuthentication from "../../../../src/withAuthentication";
-import axios from "axios";
 
 const redis = createRedisInstance();
 
@@ -44,7 +43,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse, user: accounts
                     "User-Agent": "DiscordBot (https://discord.js.org, 0.0.0)",
                 },
                 proxy: false,
-                httpsAgent: new HttpsProxyAgent(`https://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@zproxy.lum-superproxy.io:22225`),
+                // TODO: FIX HTTPS
+                // httpsAgent: new HttpsProxyAgent(`https://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@zproxy.lum-superproxy.io:22225`),
                 validateStatus: () => true,
             }).then(async (resp) => {
                 let json = resp.data;
@@ -158,7 +158,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse, user: accounts
                     "User-Agent": "DiscordBot (https://discord.js.org, 0.0.0)",
                 },
                 proxy: false,
-                httpsAgent: new HttpsProxyAgent(`https://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@zproxy.lum-superproxy.io:22225`),
+                // TODO: FIX HTTPS
+                // httpsAgent: new HttpsProxyAgent(`https://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@zproxy.lum-superproxy.io:22225`),
                 validateStatus: () => true,
             }).then(async (response) => {
                 if (response.status !== 200) return res.status(400).json({ success: false, message: "Invalid bot token" });

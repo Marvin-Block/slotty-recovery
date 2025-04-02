@@ -95,7 +95,7 @@ export default function Verify({ server, status, err, errStack, captcha }: any) 
                     console.error(err);
                 });
         }
-    }, [server, status, captchaToken, errStack]);
+    }, [server, status, captchaToken, errStack, isAdult, captcha]);
 
     function ErrorAlert(err: string) {
         const errorMessages: any = {
@@ -156,7 +156,6 @@ export default function Verify({ server, status, err, errStack, captcha }: any) 
                 {(server.unlisted || server.private || server.locked) && ( <meta name="robots" content="noindex" /> )}
                 <title>{server.name ? server.name : "SlottyRecovery"}</title>
             </Head>
-
             {(server.success && server.bg && !(nsfwModal)) && ( <Box sx={{ backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(${server.bg})`, backgroundSize: "cover", backgroundPosition: "center", backgroundRepeat: "no-repeat", height: "100vh", width: "100vw", position: "absolute", top: "0", left: "0", zIndex: "-999", filter: "blur(0.5rem)" }} /> )}
 
             <Container maxWidth="lg">
@@ -343,7 +342,7 @@ export default function Verify({ server, status, err, errStack, captcha }: any) 
 export async function getServerSideProps({ req }: any) {
     if (req) {
         const cookies = req.headers.cookie ? req.headers.cookie : "";
-        const host = `https://${(req.headers['x-forwarded-host'] || req.headers.host)}`;
+        const host = `http://${(req.headers['x-forwarded-host'] || req.headers.host)}`;
 
         let serverName = req.url.split("/")[2];
         let type = 1;

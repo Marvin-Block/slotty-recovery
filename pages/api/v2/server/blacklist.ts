@@ -1,9 +1,8 @@
+import { accounts } from "@prisma/client";
+import axios from "axios";
 import { NextApiRequest, NextApiResponse } from "next";
 import { prisma } from "../../../../src/db";
 import withAuthentication from "../../../../src/withAuthentication";
-import { accounts } from "@prisma/client";
-import axios from "axios";
-import { HttpsProxyAgent } from "https-proxy-agent";
 
 async function handler(req: NextApiRequest, res: NextApiResponse, user: accounts) {
     return new Promise(async resolve => {
@@ -188,7 +187,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse, user: accounts
                             Authorization: `Bot ${bot.botToken}`
                         },
                         proxy: false,
-                        httpsAgent: new HttpsProxyAgent(`https://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@zproxy.lum-superproxy.io:22225`) 
+                        // TODO: FIX HTTPS
+                        // httpsAgent: new HttpsProxyAgent(`https://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@zproxy.lum-superproxy.io:22225`) 
                     }).then(async (response: any) => {
                         if (response.data) {
                             var bans = response.data;
