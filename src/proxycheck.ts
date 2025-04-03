@@ -51,10 +51,10 @@ class proxycheck {
         if(!options) options = {};
         let url;
         if(Array.isArray(ip)) {
-            url = "http://proxycheck.io/v2/" + "?key=" + this.api_key;
+            url = "https://proxycheck.io/v2/" + "?key=" + this.api_key;
         }
         else {
-            url = "http://proxycheck.io/v2/" + ip + "?key=" + this.api_key;
+            url = "https://proxycheck.io/v2/" + ip + "?key=" + this.api_key;
         }
         if(options.vpn) url += "&vpn=1";
         if(options.asn) url += "&asn=1";

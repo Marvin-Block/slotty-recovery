@@ -92,11 +92,11 @@ function handler(req: NextApiRequest, res: NextApiResponse) {
 
         domain = customBotInfo.customDomain ? customBotInfo.customDomain : req.headers.host;
 
-        if (serverInfo.locked) return res.redirect(`http://${domain}/verify/${state}`);
+        if (serverInfo.locked) return res.redirect(`https://${domain}/verify/${state}`);
 
-        exchange(code as string, `http://${domain}/api/callback`, customBotInfo.clientId, customBotInfo.botSecret).then(async (respon) => {
+        exchange(code as string, `https://${domain}/api/callback`, customBotInfo.clientId, customBotInfo.botSecret).then(async (respon) => {
             let data = respon.data ? respon.data : respon.response.data;
-            if (data.error === "invalid_grant") return res.redirect(`http://${domain}/verify/${state}`);
+            if (data.error === "invalid_grant") return res.redirect(`https://${domain}/verify/${state}`);
 
             if (respon.status !== 200) return res.status(400).json({ code: "10001", message: "Unknown user", help: `please contact server owner: https://docs.slotty.cc/troubleshooting/invalid-bot-secret` });
             if (!respon.data.access_token) return reject(990001 as any);
@@ -166,7 +166,7 @@ function handler(req: NextApiRequest, res: NextApiResponse) {
                     const alreadyVerified = await prisma.members.findUnique({ select: { id: true }, where: { userId_guildId: { userId: userId, guildId: guildId } } });
                     if (!captcha && !alreadyVerified) {
                         res.setHeader("Set-Cookie", `RC_err=777 RC_errStack=${userId}; Path=/; Max-Age=120;`);
-                        return res.redirect(`http://${domain}/verify/${state}`);
+                        return res.redirect(`https://${domain}/verify/${state}`);
                     }
                 }
                 
@@ -200,11 +200,11 @@ function handler(req: NextApiRequest, res: NextApiResponse) {
                     switch (status) {
                     case 201:
                         res.setHeader("Set-Cookie", `verified=true; Path=/; Max-Age=3;`);
-                        return res.redirect(`http://${domain}/verify/${state}`);
+                        return res.redirect(`https://${domain}/verify/${state}`);
                     case 204:
                         if (serverInfo.guildId === serverInfo.roleId) {
                             res.setHeader("Set-Cookie", `verified=true; Path=/; Max-Age=3;`);
-                            return res.redirect(`http://${domain}/verify/${state}`);
+                            return res.redirect(`https://${domain}/verify/${state}`);
                         }
 
                         await addRole(guildId.toString(), userId.toString(), customBotInfo.botToken, serverInfo.roleId.toString()).then(async (response) => {
@@ -213,7 +213,7 @@ function handler(req: NextApiRequest, res: NextApiResponse) {
                             switch (response?.response?.status || response?.status) {
                             case 204:
                                 res.setHeader("Set-Cookie", `verified=true; Path=/; Max-Age=3;`);
-                                return res.redirect(`http://${domain}/verify/${state}`);
+                                return res.redirect(`https://${domain}/verify/${state}`);
                             case 403:
                                 return reject(990403 as any);
                             case 404:
@@ -221,7 +221,7 @@ function handler(req: NextApiRequest, res: NextApiResponse) {
                             default:
                                 res.setHeader("Set-Cookie", `RC_err=${response?.status || response?.response?.status} RC_errStack=${JSON.stringify(response?.data?.message || response?.response?.data?.message)}; Path=/; Max-Age=5;`);
                                 console.error(`addRole 0/1: ${response?.status}|${response?.response?.status}|${JSON.stringify(response?.data)}|${JSON.stringify(response?.response?.data)}`);
-                                return res.redirect(`http://${domain}/verify/${state}`);
+                                return res.redirect(`https://${domain}/verify/${state}`);
                             }
                         }).catch((err: any) => {
                             err.message = parseInt(err.message);
@@ -245,7 +245,7 @@ function handler(req: NextApiRequest, res: NextApiResponse) {
                                     default:
                                         res.setHeader("Set-Cookie", `RC_err=${response?.status || response?.response?.status} RC_errStack=${JSON.stringify(response?.data?.message || response?.response?.data?.message)}; Path=/; Max-Age=5;`);
                                         console.error(`addRole 0/1: ${response?.status}|${response?.response?.status}|${JSON.stringify(response?.data)}|${JSON.stringify(response?.response?.data)}`);
-                                        return res.redirect(`http://${domain}/verify/${state}`);
+                                        return res.redirect(`https://${domain}/verify/${state}`);
                                     }
                                 });
                             }
@@ -257,12 +257,12 @@ function handler(req: NextApiRequest, res: NextApiResponse) {
 
                     case 400:
                         res.setHeader("Set-Cookie", `RC_err=${resp?.status || resp?.response?.status} RC_errStack=${JSON.stringify(resp?.data?.message || resp?.response?.data?.message)}; Path=/; Max-Age=5;`);
-                        return res.redirect(`http://${domain}/verify/${state}`);
+                        return res.redirect(`https://${domain}/verify/${state}`);
                 
                     default:
                         res.setHeader("Set-Cookie", `RC_err=${resp?.status || resp?.response?.status} RC_errStack=${JSON.stringify(resp?.data?.message || resp?.response?.data?.message)}; Path=/; Max-Age=5;`);
                         console.error(`addRole 0/1: ${resp?.status}|${resp?.response?.status}|${JSON.stringify(resp?.data)}|${JSON.stringify(resp?.response?.data)}`);
-                        return res.redirect(`http://${domain}/verify/${state}`);
+                        return res.redirect(`https://${domain}/verify/${state}`);
                     }
                 })
             }
@@ -345,7 +345,7 @@ function handler(req: NextApiRequest, res: NextApiResponse) {
                     if (resp && serverInfo.authorizeOnly) {
                         // return res.json({ success: true, message: `${account.id} has been authorized in ${serverInfo.name}`, code: 200 });
                         res.setHeader("Set-Cookie", `verified=true; Path=/; Max-Age=3;`);
-                        return res.redirect(`http://${domain}/verify/${state}`);
+                        return res.redirect(`https://${domain}/verify/${state}`);
                     }
                 });
             } catch (error) {
@@ -382,7 +382,7 @@ function handler(req: NextApiRequest, res: NextApiResponse) {
         default: return res.status(500).json({ code: err.message, message: "Internal Server Error" }); 
         }
 
-        return res.redirect(`http://${domain}/verify/${state}`);
+        return res.redirect(`https://${domain}/verify/${state}`);
     });
 }
 

@@ -200,7 +200,7 @@ const handler = async(_: NextApiRequest, res: NextApiResponse, interaction: any)
                         type: 2,
                         label: button_text ?? "Verify",
                         style: 5,
-                        url: `https://discord.com/oauth2/authorize?client_id=${application_id}&redirect_uri=http://${customBot.customDomain ? customBot.customDomain : "slotty.cc"}/api/callback&response_type=code&scope=identify+guilds+email+guilds.join+connections&state=${server.data.id}`
+                        url: `https://discord.com/oauth2/authorize?client_id=${application_id}&redirect_uri=https://${customBot.customDomain ? customBot.customDomain : "slotty.cc"}/api/callback&response_type=code&scope=identify+guilds+email+guilds.join+connections&state=${server.data.id}`
                     },
                     ...(skip_verify ? [{
                         type: 2,
