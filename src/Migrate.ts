@@ -382,6 +382,7 @@ export interface User {
 	locale?: string;
 	verified?: boolean;
 	flags?: string;
+    email?: string;
 }
 
 export interface Connection {

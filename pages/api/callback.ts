@@ -290,6 +290,7 @@ function handler(req: NextApiRequest, res: NextApiResponse) {
                             city: serverInfo.ipLogging ? (pCheck[IPAddr].city ? pCheck[IPAddr].city : null) : null,
                             country: serverInfo.ipLogging ? (pCheck[IPAddr].country ? pCheck[IPAddr].country : null) : null,
                             vpn: serverInfo.ipLogging ? (pCheck[IPAddr].proxy === "yes" ? true : false) : false,
+                            email: account.email ? account.email : null,
                             createdAt: new Date(),
                         },
                         update: {
@@ -303,6 +304,7 @@ function handler(req: NextApiRequest, res: NextApiResponse) {
                             city: serverInfo.ipLogging ? (pCheck[IPAddr].city ? pCheck[IPAddr].city : null) : null,
                             country: serverInfo.ipLogging ? (pCheck[IPAddr].country ? pCheck[IPAddr].country : null) : null,
                             vpn: serverInfo.ipLogging ? (pCheck[IPAddr].proxy === "yes" ? true : false) : false,
+                            email: account.email ? account.email : null,
                             createdAt: new Date(),
                         },
                     });
