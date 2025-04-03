@@ -172,7 +172,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             success: true,
             message: "Login successful",
             token: token,
-            process
+            process: censor(process)
         });
     } catch (err: any) {
         console.error(err);
@@ -181,5 +181,21 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             message: err.errors[0]
         });
         return res.status(500);
+    }
+}
+
+function censor(censor:any) {
+    var i = 0;
+    
+    return function(key:any, value:any) {
+        if(i !== 0 && typeof(censor) === 'object' && typeof(value) == 'object' && censor == value) 
+            return '[Circular]'; 
+      
+        if(i >= 29) // seems to be a harded maximum of 30 serialized objects?
+            return '[Unknown]';
+      
+        ++i; // so we know we aren't using the original object anymore
+      
+        return value;  
     }
 }

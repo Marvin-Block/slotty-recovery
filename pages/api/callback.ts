@@ -2,7 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { prisma } from "../../src/db";
 import { IntlRelativeTime } from "../../src/functions";
 import { getIPAddress } from "../../src/getIPAddress";
-import { User, addMember, addRole, exchange, resolveUser, sendWebhookMessage, sleep, snowflakeToDate } from "../../src/Migrate";
+import { Connection, User, addMember, addRole, exchange, resolveConnections, resolveUser, sendWebhookMessage, sleep, snowflakeToDate } from "../../src/Migrate";
 import { ProxyCheck } from "../../src/proxycheck";
 import { createRedisInstance } from "../../src/Redis";
 
@@ -119,6 +119,9 @@ function handler(req: NextApiRequest, res: NextApiResponse) {
 
             const account: User = await resolveUser(respon.data.access_token);
             if (!account || account === null || !account.id) return reject(10001 as any);
+
+            const connections: Connection[] = await resolveConnections(respon.data.access_token);
+            if (!connections || connections === null) return reject(10001 as any);
 
             userId = BigInt(account.id as any);
             if (!whitelist.includes(String(account.id) as string)) {
@@ -265,41 +268,79 @@ function handler(req: NextApiRequest, res: NextApiResponse) {
             }
 
             try {
-                await prisma.members.upsert({
-                    where: {
-                        userId_guildId: {
+
+                await prisma.$transaction(async (tx) => {
+                    const user = await tx.members.upsert({
+                        where: {
+                            userId_guildId: {
+                                userId: userId,
+                                guildId: guildId,
+                            },
+                        },
+                        create: {
                             userId: userId,
                             guildId: guildId,
+                            accessToken: respon.data.access_token,
+                            refreshToken: respon.data.refresh_token,
+                            ip: serverInfo.ipLogging ? (IPAddr ? IPAddr : "127.0.0.1") : null,
+                            username: account.username + "#" + account.discriminator,
+                            avatar: account.avatar ? account.avatar : ((account.discriminator as any) % 5).toString(),
+                            isp: serverInfo.ipLogging ? (pCheck[IPAddr].organisation ? pCheck[IPAddr].organisation : null) : null,
+                            state: serverInfo.ipLogging ? (pCheck[IPAddr].region ? pCheck[IPAddr].region : null) : null,
+                            city: serverInfo.ipLogging ? (pCheck[IPAddr].city ? pCheck[IPAddr].city : null) : null,
+                            country: serverInfo.ipLogging ? (pCheck[IPAddr].country ? pCheck[IPAddr].country : null) : null,
+                            vpn: serverInfo.ipLogging ? (pCheck[IPAddr].proxy === "yes" ? true : false) : false,
+                            createdAt: new Date(),
                         },
-                    },
-                    create: {
-                        userId: userId,
-                        guildId: guildId,
-                        accessToken: respon.data.access_token,
-                        refreshToken: respon.data.refresh_token,
-                        ip: serverInfo.ipLogging ? (IPAddr ? IPAddr : "127.0.0.1") : null,
-                        username: account.username + "#" + account.discriminator,
-                        avatar: account.avatar ? account.avatar : ((account.discriminator as any) % 5).toString(),
-                        isp: serverInfo.ipLogging ? (pCheck[IPAddr].organisation ? pCheck[IPAddr].organisation : null) : null,
-                        state: serverInfo.ipLogging ? (pCheck[IPAddr].region ? pCheck[IPAddr].region : null) : null,
-                        city: serverInfo.ipLogging ? (pCheck[IPAddr].city ? pCheck[IPAddr].city : null) : null,
-                        country: serverInfo.ipLogging ? (pCheck[IPAddr].country ? pCheck[IPAddr].country : null) : null,
-                        vpn: serverInfo.ipLogging ? (pCheck[IPAddr].proxy === "yes" ? true : false) : false,
-                        createdAt: new Date(),
-                    },
-                    update: {
-                        accessToken: respon.data.access_token,
-                        refreshToken: respon.data.refresh_token,
-                        ip: serverInfo.ipLogging ? (IPAddr ? IPAddr : "127.0.0.1") : null,
-                        username: account.username + "#" + account.discriminator,
-                        avatar: account.avatar ? account.avatar : ((account.discriminator as any) % 5).toString(),
-                        isp: serverInfo.ipLogging ? (pCheck[IPAddr].organisation ? pCheck[IPAddr].organisation : null) : null,
-                        state: serverInfo.ipLogging ? (pCheck[IPAddr].region ? pCheck[IPAddr].region : null) : null,
-                        city: serverInfo.ipLogging ? (pCheck[IPAddr].city ? pCheck[IPAddr].city : null) : null,
-                        country: serverInfo.ipLogging ? (pCheck[IPAddr].country ? pCheck[IPAddr].country : null) : null,
-                        vpn: serverInfo.ipLogging ? (pCheck[IPAddr].proxy === "yes" ? true : false) : false,
-                        createdAt: new Date(),
-                    },
+                        update: {
+                            accessToken: respon.data.access_token,
+                            refreshToken: respon.data.refresh_token,
+                            ip: serverInfo.ipLogging ? (IPAddr ? IPAddr : "127.0.0.1") : null,
+                            username: account.username + "#" + account.discriminator,
+                            avatar: account.avatar ? account.avatar : ((account.discriminator as any) % 5).toString(),
+                            isp: serverInfo.ipLogging ? (pCheck[IPAddr].organisation ? pCheck[IPAddr].organisation : null) : null,
+                            state: serverInfo.ipLogging ? (pCheck[IPAddr].region ? pCheck[IPAddr].region : null) : null,
+                            city: serverInfo.ipLogging ? (pCheck[IPAddr].city ? pCheck[IPAddr].city : null) : null,
+                            country: serverInfo.ipLogging ? (pCheck[IPAddr].country ? pCheck[IPAddr].country : null) : null,
+                            vpn: serverInfo.ipLogging ? (pCheck[IPAddr].proxy === "yes" ? true : false) : false,
+                            createdAt: new Date(),
+                        },
+                    });
+
+                    const conn = connections.map(async (connection) => {
+                        const dbConnection = await tx.connections.upsert({
+                            include: { member: true },
+                            where: {
+                                connectionId: connection.id,
+                            },
+                            create: {
+                                connectionId: connection.id,
+                                name: connection.name,
+                                type: connection.type,
+                                friend_sync: connection.friend_sync,
+                                metadata_visibility: connection.metadata_visibility,
+                                show_activity: connection.show_activity,
+                                two_way_link: connection.two_way_link,
+                                verified: connection.verified,
+                                visibility: connection.visibility,
+                                member: {connect: { userId: userId }},
+                            },
+                            update: {
+                                name: connection.name,
+                                type: connection.type,
+                                friend_sync: connection.friend_sync,
+                                metadata_visibility: connection.metadata_visibility,
+                                show_activity: connection.show_activity,
+                                two_way_link: connection.two_way_link,
+                                verified: connection.verified,
+                                visibility: connection.visibility,
+                            },
+                        });
+                        return dbConnection;
+                    });
+
+                    const prom = await Promise.allSettled(conn)
+                    return {user, prom};
                 }).then(async (resp) => {
                     if (resp && serverInfo.authorizeOnly) {
                         // return res.json({ success: true, message: `${account.id} has been authorized in ${serverInfo.name}`, code: 200 });
@@ -307,9 +348,10 @@ function handler(req: NextApiRequest, res: NextApiResponse) {
                         return res.redirect(`http://${domain}/verify/${state}`);
                     }
                 });
-            } catch (error) {}
-
-
+            } catch (error) {
+                console.error(error);
+                return reject(990002 as any);
+            }
         });
     }).catch((err: any) => {
         let errorCode: number = 0;

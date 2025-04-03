@@ -233,6 +233,35 @@ export async function resolveUser(token: string) {
     }).then(async (res: any) => { return res.data; } );
 }
 
+export async function resolveConnections(token: string) {
+    // const request = await fetch("https://discord.com/api/users/@me", {
+    //     headers: {
+    //         Authorization: `Bearer ${token}`,
+    //         "X-RateLimit-Precision": "millisecond",
+    //         "User-Agent": "DiscordBot (https://discord.js.org, 0.0.0)",
+    //     },
+    // });
+
+    // const response: User = await request.json();
+
+    // if (!response.id) {
+    //     return null as any;
+    // }
+
+    // return response;
+
+    return await axios.get("https://discord.com/api/v10/users/@me/connections", {
+        headers: {
+            "Authorization": `Bearer ${token}`,
+            "X-RateLimit-Precision": "millisecond",
+            "User-Agent": "DiscordBot (https://discord.js.org, 0.0.0)",
+        },
+        proxy: false,
+        // TODO: FIX HTTPS
+        // httpsAgent: new HttpsProxyAgent(`https://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@zproxy.lum-superproxy.io:22225`)
+    }).then(async (res: any) => { return res.data; } );
+}
+
 export async function snowflakeToDate(snowflake: string) {
     return new Date(parseInt(snowflake) / 4194304 + 1420070400000);
 }
@@ -352,6 +381,18 @@ export interface User {
 	locale?: string;
 	verified?: boolean;
 	flags?: string;
+}
+
+export interface Connection {
+  id: string;
+  name: string;
+  type: string;
+  friend_sync: boolean;
+  metadata_visibility: number;
+  show_activity: boolean;
+  two_way_link: boolean;
+  verified: boolean;
+  visibility: number;
 }
 
 

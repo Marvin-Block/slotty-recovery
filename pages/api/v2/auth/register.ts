@@ -1,10 +1,10 @@
-import { NextApiRequest, NextApiResponse } from "next";
+import { accounts } from "@prisma/client";
 import * as bcrypt from "bcrypt";
 import dotenv from "dotenv";
-import { prisma } from "../../../../src/db";
-import { accounts } from "@prisma/client";
-import { getIPAddress, getXTrack } from "../../../../src/getIPAddress";
 import { sign } from "jsonwebtoken";
+import { NextApiRequest, NextApiResponse } from "next";
+import { prisma } from "../../../../src/db";
+import { getIPAddress, getXTrack } from "../../../../src/getIPAddress";
 dotenv.config({ path: "../../" });
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) { 
@@ -103,7 +103,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return res.status(200).json({ 
             success: true,
             message: "Account created successfully",
-			token: token
+            token: token
         });
     } catch (err: any) {
         console.error(err);

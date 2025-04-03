@@ -5,7 +5,7 @@ module.exports = {
     images: {
         domains: [
             "cdn.slotty.cc",
-            "restorerecord.com",
+            "slotty.cc",
             "cdn.discordapp.com",
             "cdn.discord.com",
             "i.imgur.com",

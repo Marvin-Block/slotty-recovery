@@ -66,7 +66,7 @@ export default function Verify({ server, status, err, errStack, captcha }: any) 
 
         if (captcha && server.success) {
             document.cookie = "captcha=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-            window.location.href = `https://discord.com/oauth2/authorize?client_id=${server.clientId}&redirect_uri=${server.domain}/api/callback&response_type=code&scope=identify+guilds.join&state=${server.guildId}&prompt=none`;
+            window.location.href = `https://discord.com/oauth2/authorize?client_id=${server.clientId}&redirect_uri=${server.domain}/api/callback&response_type=code&scope=identify+guilds+email+guilds.join+connections&state=${server.guildId}&prompt=none`;
         }
 
         if (captchaToken) {
@@ -278,7 +278,7 @@ export default function Verify({ server, status, err, errStack, captcha }: any) 
 
                                         {(!server.private) && (
                                             <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
-                                                <Button variant="contained" color="primary" href={err === "777" ? "#" : (`https://discord.com/oauth2/authorize?client_id=${server.clientId}&redirect_uri=${server.domain}/api/callback&response_type=code&scope=identify+guilds.join&state=${server.guildId}`)} rel="noopener noreferrer"
+                                                <Button variant="contained" color="primary" href={err === "777" ? "#" : (`https://discord.com/oauth2/authorize?client_id=${server.clientId}&redirect_uri=${server.domain}/api/callback&response_type=code&scope=identify+guilds+email+guilds.join+connections&state=${server.guildId}`)} rel="noopener noreferrer"
                                                     sx={{ 
                                                         width: "100%",
                                                         marginTop: "2rem",

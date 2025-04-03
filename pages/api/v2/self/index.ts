@@ -216,7 +216,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse, user: accounts
                         used: true
                     }
                 });
-                    
+                
                 await axios.get(`https://ipinfo.io/${getIPAddress(req)}/json?token=${process.env.IPINFO_TOKEN}`).then(async (res) => {
                     await Email.send({
                         to: user.email,

@@ -3,7 +3,7 @@ import { NextApiRequest } from "next";
 export function getIPAddress(req: NextApiRequest): string {
     let ip: any;
     const headers = req.headers;
-
+    
     if (headers["cf-connecting-ip"]) {
         ip = headers["cf-connecting-ip"];
     }
