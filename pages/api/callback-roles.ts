@@ -1,4 +1,5 @@
 import axios from "axios";
+import { HttpsProxyAgent } from "https-proxy-agent";
 import { verify } from "jsonwebtoken";
 import { NextApiRequest, NextApiResponse } from "next";
 import { exchange, resolveUser } from "../../src/Migrate";
@@ -123,8 +124,7 @@ function handler(req: NextApiRequest, res: NextApiResponse) {
                     },
                     validateStatus: () => true,
                     proxy: false,
-                    // TODO: FIX HTTPS
-                    // httpsAgent: new HttpsProxyAgent(`https://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@zproxy.lum-superproxy.io:22225`),
+                    httpsAgent: new HttpsProxyAgent(`http://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@brd.superproxy.io:33335`),
                 }).catch((err) => { console.error(err); });
 
                 return res.status(200).json({ error: false, message: "Successfully linked your account" });

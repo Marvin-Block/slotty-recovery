@@ -1,5 +1,6 @@
 import { accounts } from "@prisma/client";
 import axios from "axios";
+import { HttpsProxyAgent } from "https-proxy-agent";
 import { NextApiRequest, NextApiResponse } from "next";
 import { prisma } from "../../../../../../src/db";
 import { createRedisInstance } from "../../../../../../src/Redis";
@@ -71,8 +72,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse, user: accounts
                     "User-Agent": "DiscordBot (https://discord.js.org, 0.0.0)",
                 },
                 proxy: false,
-                // TODO: FIX HTTPS
-                // httpsAgent: new HttpsProxyAgent(`https://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@zproxy.lum-superproxy.io:22225`),
+                httpsAgent: new HttpsProxyAgent(`http://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@brd.superproxy.io:33335`),
                 validateStatus: () => true,
             }).then((resp) => {
                 if (resp?.status === 403 || resp?.status == 403) return res.status(400).json({ success: false, message: "The bot does not have permission to assign that role" });

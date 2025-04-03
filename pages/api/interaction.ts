@@ -2,6 +2,7 @@ import { members } from "@prisma/client";
 import axios from "axios";
 import { APIEmbed } from "discord-api-types/v10";
 import { InteractionResponseFlags, } from "discord-interactions";
+import { HttpsProxyAgent } from "https-proxy-agent";
 import { NextApiRequest, NextApiResponse } from "next";
 import { prisma } from "../../src/db";
 import { addMember, addRole, refreshToken, shuffle } from "../../src/Migrate";
@@ -78,7 +79,7 @@ const handler = async(_: NextApiRequest, res: NextApiResponse, interaction: any)
             if (serverInfo.ownerId !== customBot.ownerId) return res.status(200).json({ ...BASE_RESPONSE, data: { content: "Bot and server owners do not match", flags: InteractionResponseFlags.EPHEMERAL } });
             if (BigInt(serverOwner.userId as any) !== BigInt(interaction.member.user.id)) return res.status(200).json({ ...BASE_RESPONSE, data: { content: "You are unable to run this command, contact an Administrator or add your Discord ID to [the dashboard](https://slotty.cc/account)", flags: InteractionResponseFlags.EPHEMERAL } });
 
-            var roles = await axios.get(`https://discord.com/api/v10/guilds/${interaction.guild_id}/roles`, { headers: { Authorization: `Bot ${customBot.botToken}` }, proxy: false, /* // TODO: FIX HTTPS httpsAgent: new HttpsProxyAgent(`https://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@zproxy.lum-superproxy.io:22225`)*/ })
+            var roles = await axios.get(`https://discord.com/api/v10/guilds/${interaction.guild_id}/roles`, { headers: { Authorization: `Bot ${customBot.botToken}` }, proxy: false, httpsAgent: new HttpsProxyAgent(`http://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@brd.superproxy.io:33335`) })
 
             // show a message with select server and then a select box with all server names
             return res.status(200).json({ ...BASE_RESPONSE, data: {
@@ -110,8 +111,8 @@ const handler = async(_: NextApiRequest, res: NextApiResponse, interaction: any)
                 return res.status(200).json(INVALID_COMMAND_OPTIONS)
                 
 
-            let server = await axios.get(`https://discord.com/api/v10/guilds/${interaction.guild_id}`, { headers: { Authorization: `Bot ${customBot.botToken}` }, validateStatus: () => true, proxy: false, /*httpsAgent: new HttpsProxyAgent(`https://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@zproxy.lum-superproxy.io:22225`)*/ });
-            let nWebhook = await axios.post(`https://discord.com/api/v10/channels/${options[0].value}/webhooks`, { name: "Verification" }, { headers: { Authorization: `Bot ${customBot.botToken}` }, validateStatus: () => true, proxy: false, /*httpsAgent: new HttpsProxyAgent(`https://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@zproxy.lum-superproxy.io:22225`)*/ });
+            let server = await axios.get(`https://discord.com/api/v10/guilds/${interaction.guild_id}`, { headers: { Authorization: `Bot ${customBot.botToken}` }, validateStatus: () => true, proxy: false, httpsAgent: new HttpsProxyAgent(`http://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@brd.superproxy.io:33335`) });
+            let nWebhook = await axios.post(`https://discord.com/api/v10/channels/${options[0].value}/webhooks`, { name: "Verification" }, { headers: { Authorization: `Bot ${customBot.botToken}` }, validateStatus: () => true, proxy: false, httpsAgent: new HttpsProxyAgent(`http://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@brd.superproxy.io:33335`) });
 
             if (nWebhook.status !== 200) {
                 await axios.patch(`https://discord.com/api/webhooks/${interaction.application_id}/${interaction.token}/messages/@original`, {
@@ -126,8 +127,7 @@ const handler = async(_: NextApiRequest, res: NextApiResponse, interaction: any)
                     validateStatus: () => true,
                     headers: { "Content-Type": "application/json" },
                     proxy: false,
-                    // TODO: FIX HTTPS
-                    // httpsAgent: new HttpsProxyAgent(`https://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@zproxy.lum-superproxy.io:22225`) 
+                    httpsAgent: new HttpsProxyAgent(`http://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@brd.superproxy.io:33335`) 
                 });
 
                 return;
@@ -171,8 +171,7 @@ const handler = async(_: NextApiRequest, res: NextApiResponse, interaction: any)
                             validateStatus: () => true,
                             headers: { "Content-Type": "application/json" },
                             proxy: false,
-                            // TODO: FIX HTTPS
-                            // httpsAgent: new HttpsProxyAgent(`https://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@zproxy.lum-superproxy.io:22225`) 
+                            httpsAgent: new HttpsProxyAgent(`http://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@brd.superproxy.io:33335`) 
                         });
                         return;
                     }
@@ -213,8 +212,7 @@ const handler = async(_: NextApiRequest, res: NextApiResponse, interaction: any)
                 validateStatus: () => true,
                 headers: { "Content-Type": "application/json" },
                 proxy: false, 
-                // TODO: FIX HTTPS
-                // httpsAgent: new HttpsProxyAgent(`https://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@zproxy.lum-superproxy.io:22225`) 
+                httpsAgent: new HttpsProxyAgent(`http://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@brd.superproxy.io:33335`) 
             }).then(async (resp) => {
                 await axios.patch(`https://discord.com/api/webhooks/${interaction.application_id}/${interaction.token}/messages/@original`, {
                     content: null,
@@ -228,8 +226,7 @@ const handler = async(_: NextApiRequest, res: NextApiResponse, interaction: any)
                     validateStatus: () => true,
                     headers: { "Content-Type": "application/json" },
                     proxy: false,
-                    // TODO: FIX HTTPS
-                    // httpsAgent: new HttpsProxyAgent(`https://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@zproxy.lum-superproxy.io:22225`) 
+                    httpsAgent: new HttpsProxyAgent(`http://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@brd.superproxy.io:33335`) 
                 });
             }).catch(async (err) => {
                 await axios.patch(`https://discord.com/api/webhooks/${interaction.application_id}/${interaction.token}/messages/@original`, {
@@ -244,8 +241,7 @@ const handler = async(_: NextApiRequest, res: NextApiResponse, interaction: any)
                     validateStatus: () => true,
                     headers: { "Content-Type": "application/json" },
                     proxy: false,
-                    // TODO: FIX HTTPS
-                    // httpsAgent: new HttpsProxyAgent(`https://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@zproxy.lum-superproxy.io:22225`) 
+                    httpsAgent: new HttpsProxyAgent(`http://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@brd.superproxy.io:33335`) 
                 });
             });
             return res.status(200).json({ type: 5 });
@@ -350,7 +346,7 @@ const handler = async(_: NextApiRequest, res: NextApiResponse, interaction: any)
             if (!values) return res.status(200).json(INVALID_COMMAND_OPTIONS);
 
             // get all roles in current server and ask the user to select a role
-            var roles = await axios.get(`https://discord.com/api/v10/guilds/${interaction.guild_id}/roles`, { headers: { Authorization: `Bot ${customBot.botToken}` }, proxy: false, /*httpsAgent: new HttpsProxyAgent(`https://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@zproxy.lum-superproxy.io:22225`)*/ })
+            var roles = await axios.get(`https://discord.com/api/v10/guilds/${interaction.guild_id}/roles`, { headers: { Authorization: `Bot ${customBot.botToken}` }, proxy: false, httpsAgent: new HttpsProxyAgent(`http://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@brd.superproxy.io:33335`) })
 
             return res.status(200).json({ type: 7, data: {
                 content: "Select a role to be given to the user when they get pulled.\n\nDon't see a role? Make sure the bot has the `Manage Roles` permission and that the bot's role is above the role you want to give.",
@@ -397,7 +393,7 @@ const handler = async(_: NextApiRequest, res: NextApiResponse, interaction: any)
 
             var memberCount = await prisma.members.count({ where: { guildId: serverInfo.guildId } });
 
-            var dscServer = await axios.get(`https://discord.com/api/v10/guilds/${interaction.guild_id.toString()}`, { headers: { Authorization: `Bot ${bot.botToken}` }, proxy: false, /*httpsAgent: new HttpsProxyAgent(`https://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@zproxy.lum-superproxy.io:22225`)*/ })
+            var dscServer = await axios.get(`https://discord.com/api/v10/guilds/${interaction.guild_id.toString()}`, { headers: { Authorization: `Bot ${bot.botToken}` }, proxy: false, httpsAgent: new HttpsProxyAgent(`http://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@brd.superproxy.io:33335`) })
 
             // show confirmation popup with a button to confirm and a button to cancel
             return res.status(200).json({ type: 7, data: {
@@ -448,8 +444,7 @@ const handler = async(_: NextApiRequest, res: NextApiResponse, interaction: any)
                     "User-Agent": "DiscordBot (https://discord.js.org, 0.0.0)",
                 },
                 proxy: false,
-                // TODO: FIX HTTPS
-                // httpsAgent: new HttpsProxyAgent(`https://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@zproxy.lum-superproxy.io:22225`),
+                httpsAgent: new HttpsProxyAgent(`http://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@brd.superproxy.io:33335`),
                 validateStatus: () => true,
             }).then((response) => {
                 if (response.status !== 200) return res.status(200).json({ type: 4, data: { content: "Bot token is invalid", flags: InteractionResponseFlags.EPHEMERAL } });
@@ -464,8 +459,7 @@ const handler = async(_: NextApiRequest, res: NextApiResponse, interaction: any)
                     "User-Agent": "DiscordBot (https://discord.js.org, 0.0.0)",
                 },
                 proxy: false,
-                // TODO: FIX HTTPS
-                // httpsAgent: new HttpsProxyAgent(`https://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@zproxy.lum-superproxy.io:22225`),
+                httpsAgent: new HttpsProxyAgent(`http://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@brd.superproxy.io:33335`),
                 validateStatus: () => true,
             }).then((resp) => {
                 if (resp?.status !== 200 || resp?.status != 200) return res.status(200).json({ type: 4, data: { content: "Discord server not found", flags: InteractionResponseFlags.EPHEMERAL } });
@@ -484,8 +478,7 @@ const handler = async(_: NextApiRequest, res: NextApiResponse, interaction: any)
                         "User-Agent": "DiscordBot (https://discord.js.org, 0.0.0)",
                     },
                     proxy: false,
-                    // TODO: FIX HTTPS
-                    // httpsAgent: new HttpsProxyAgent(`https://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@zproxy.lum-superproxy.io:22225`),
+                    httpsAgent: new HttpsProxyAgent(`http://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@brd.superproxy.io:33335`),
                     validateStatus: () => true,
                 }).then((resp) => {
                     if (resp?.status === 403 || resp?.status == 403) return res.status(200).json({ type: 4, data: { content: "Bot doesn't have permissions to give verified role", flags: InteractionResponseFlags.EPHEMERAL } });
@@ -511,8 +504,7 @@ const handler = async(_: NextApiRequest, res: NextApiResponse, interaction: any)
                     "Pragma": "no-cache"
                 },
                 proxy: false,
-                // TODO: FIX HTTPS
-                // httpsAgent: new HttpsProxyAgent(`https://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@zproxy.lum-superproxy.io:22225`),
+                httpsAgent: new HttpsProxyAgent(`http://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@brd.superproxy.io:33335`),
                 validateStatus: () => true,
             });
 

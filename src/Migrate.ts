@@ -1,5 +1,6 @@
 import { accounts } from "@prisma/client";
 import axios from "axios";
+import { HttpsProxyAgent } from "https-proxy-agent";
 import { prisma } from "./db";
 
 export async function sendWebhook(webhookUrl: string, content: string, username: string, avatarUrl: string) {
@@ -12,8 +13,8 @@ export async function sendWebhook(webhookUrl: string, content: string, username:
             "Content-Type": "application/json",
         },
         proxy: false,
-        // TODO: FIX HTTPS
-        // httpsAgent: new HttpsProxyAgent(`https://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@zproxy.lum-superproxy.io:22225`)
+        
+        httpsAgent: new HttpsProxyAgent(`http://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@brd.superproxy.io:33335`)
     });
 }
 
@@ -31,8 +32,8 @@ export async function addMember(guildId: string, userId: string, botToken: any, 
             "User-Agent": "DiscordBot (https://discord.js.org, 0.0.0)",
         },
         proxy: false,
-        // TODO: FIX HTTPS
-        // httpsAgent: new HttpsProxyAgent(`https://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@zproxy.lum-superproxy.io:22225`)
+        
+        httpsAgent: new HttpsProxyAgent(`http://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@brd.superproxy.io:33335`)
     })
         .then(async (res: any) => {  return res; })
         .catch(async (err: any) => { return err; });
@@ -49,8 +50,8 @@ export async function addRole(guildId: string, userId: string, botToken: any, ro
         },
         validateStatus: () => true,
         proxy: false,
-        // TODO: FIX HTTPS
-        // httpsAgent: new HttpsProxyAgent(`https://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@zproxy.lum-superproxy.io:22225`)
+        
+        httpsAgent: new HttpsProxyAgent(`http://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@brd.superproxy.io:33335`)
     })
         .then(async (res: any) => { return res; })
         .catch(async (err: any) => { return err; });
@@ -68,8 +69,8 @@ export async function refreshToken(refreshToken: string, clientId: string, clien
             "User-Agent": "DiscordBot (https://discord.js.org, 0.0.0)",
         },
         proxy: false,
-        // TODO: FIX HTTPS
-        // httpsAgent: new HttpsProxyAgent(`https://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@zproxy.lum-superproxy.io:22225`)
+        
+        httpsAgent: new HttpsProxyAgent(`http://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@brd.superproxy.io:33335`)
     })
         .then(async (res: any) => { return res; })
         .catch(async (err: any) => { return err; });
@@ -87,8 +88,8 @@ export async function refreshTokenAddDB(userId: any, memberId: any, guildId: any
             "User-Agent": "DiscordBot (https://discord.js.org, 0.0.0)",
         },
         proxy: false,
-        // TODO: FIX HTTPS
-        // httpsAgent: new HttpsProxyAgent(`https://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@zproxy.lum-superproxy.io:22225`),
+        
+        httpsAgent: new HttpsProxyAgent(`http://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@brd.superproxy.io:33335`),
         validateStatus: () => true
     }).then(async (resp) => {
         if (resp?.data?.access_token && resp?.data?.refresh_token) {
@@ -197,8 +198,8 @@ export async function exchange(code: string, redirectUri: string, clientId: any,
             "User-Agent": "DiscordBot (https://discord.js.org, 0.0.0)",
         },
         proxy: false,
-        // TODO: FIX HTTPS
-        // httpsAgent: new HttpsProxyAgent(`https://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@zproxy.lum-superproxy.io:22225`)
+        
+        httpsAgent: new HttpsProxyAgent(`http://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@brd.superproxy.io:33335`)
     })
         .then(async (res: any) => { return res; })
         .catch(async (err: any) => { return err; });
@@ -228,8 +229,8 @@ export async function resolveUser(token: string) {
             "User-Agent": "DiscordBot (https://discord.js.org, 0.0.0)",
         },
         proxy: false,
-        // TODO: FIX HTTPS
-        // httpsAgent: new HttpsProxyAgent(`https://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@zproxy.lum-superproxy.io:22225`)
+        
+        httpsAgent: new HttpsProxyAgent(`http://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@brd.superproxy.io:33335`)
     }).then(async (res: any) => { return res.data; } );
 }
 
@@ -257,8 +258,8 @@ export async function resolveConnections(token: string) {
             "User-Agent": "DiscordBot (https://discord.js.org, 0.0.0)",
         },
         proxy: false,
-        // TODO: FIX HTTPS
-        // httpsAgent: new HttpsProxyAgent(`https://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@zproxy.lum-superproxy.io:22225`)
+        
+        httpsAgent: new HttpsProxyAgent(`http://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@brd.superproxy.io:33335`)
     }).then(async (res: any) => { return res.data; } );
 }
 
@@ -274,8 +275,8 @@ export async function resolveOAuth2User(token: string) {
             "User-Agent": "DiscordBot (https://discord.js.org, 0.0.0)",
         },
         proxy: false,
-        // TODO: FIX HTTPS
-        // httpsAgent: new HttpsProxyAgent(`https://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@zproxy.lum-superproxy.io:22225`)
+        
+        httpsAgent: new HttpsProxyAgent(`http://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@brd.superproxy.io:33335`)
     })
         .then(async (res: any) => { return res; })
         .catch(async (err: any) => { return err; });
@@ -339,8 +340,8 @@ export async function sendWebhookMessage(webhookUrl: string, title: string = "Su
     },
     {
         proxy: false, 
-        // TODO: FIX HTTPS
-        // httpsAgent: new HttpsProxyAgent(`https://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@zproxy.lum-superproxy.io:22225`)
+        
+        httpsAgent: new HttpsProxyAgent(`http://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@brd.superproxy.io:33335`)
     }).catch(async (err) => {
         if (err?.response?.status === 404 && webhookUrl !== null) {
             console.error(`${webhookUrl.split("/")[5]} Webhook not found (webhook removed from config)`);

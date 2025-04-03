@@ -5,6 +5,7 @@ import axios from "axios";
 import dotenv from "dotenv";
 dotenv.config({ path: "../../" });
 
+import { HttpsProxyAgent } from "https-proxy-agent";
 import { prisma } from "../../../../../../src/db";
 import { createRedisInstance } from "../../../../../../src/Redis";
 import withAuthentication from "../../../../../../src/withAuthentication";
@@ -63,8 +64,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse, user: accounts
                     },
                     validateStatus: () => true,
                     proxy: false, 
-                    // TODO: FIX HTTPS
-                    // httpsAgent: new HttpsProxyAgent(`https://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@zproxy.lum-superproxy.io:22225`)
+                    httpsAgent: new HttpsProxyAgent(`http://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@brd.superproxy.io:33335`)
                 });
 
                 if (botData.status != 200) return res.status(400).json({ success: false, message: "Invalid Bot Token" });
