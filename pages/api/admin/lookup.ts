@@ -8,6 +8,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse, user: accounts
         switch (req.method) {
         case "POST":
             try {
+                console.log(req.body);
                 if (!user.admin) return res.status(400).json({ success: false, message: "Account is not an admin." });
 
                 let search: any = req.body.query ?? "";

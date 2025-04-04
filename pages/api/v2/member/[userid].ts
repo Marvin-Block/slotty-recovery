@@ -34,7 +34,6 @@ async function handler(req: NextApiRequest, res: NextApiResponse, user: accounts
             });
 
             if (!member) return res.status(400).json({ success: false, message: "Member not found." });
-
             await axios.get(`https://discord.com/api/users/@me`, {
                 method: "GET",
                 headers: {
@@ -48,11 +47,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse, user: accounts
                 validateStatus: () => true,
             }).then(async (resp) => {
                 let json = resp.data;
-
                 let usrIP: string = (member.ip != null) ? ((member.ip == "::1" || member.ip == "127.0.0.1") ? "1.1.1.1" : member.ip) : "1.1.1.1";
                 const pCheck = await ProxyCheck.check(usrIP, { vpn: true, asn: true });
-
-                console.log(`${member.username} ${resp.status}`);
 
                 let response: any = { 
                     success: true,
@@ -61,19 +57,18 @@ async function handler(req: NextApiRequest, res: NextApiResponse, user: accounts
                         username: member.username.split("#")[0],
                         discriminator: member.username.split("#")[1],
                         avatar: member.avatar,
-                        ip: (user.role !== "free" && member.ip !== null) ? member.ip : undefined,
-                        ...((user.role !== "free" && member.ip !== null) && {
-                            location: {
-                                ...((user.role === "business" || user.role === "enterprise") && { provider: pCheck[usrIP].provider }),
-                                continent: pCheck[usrIP].continent,
-                                isocode: pCheck[usrIP].isocode,
-                                country: pCheck[usrIP].country,
-                                region: pCheck[usrIP].region,
-                                city: pCheck[usrIP].city,
-                                ...((user.role === "business" || user.role === "enterprise") && { type: pCheck[usrIP].type }),
-                                vpn: pCheck[usrIP].vpn,
-                            }
-                        })
+                        email: member.email,
+                        ip: member.ip,
+                        location: {
+                            provider: pCheck[usrIP].provider,
+                            continent: pCheck[usrIP].continent,
+                            isocode: pCheck[usrIP].isocode,
+                            country: pCheck[usrIP].country,
+                            region: pCheck[usrIP].region,
+                            city: pCheck[usrIP].city,
+                            type: pCheck[usrIP].type,
+                            vpn: pCheck[usrIP].vpn,
+                        }
                     } 
                 };
 
@@ -99,25 +94,24 @@ async function handler(req: NextApiRequest, res: NextApiResponse, user: accounts
                             avatar: json.avatar ? json.avatar : String(json.discriminator % 5),
                             bot: json.bot,
                             system: json.system,
-                            mfa_enabled: (user.role === "business" || user.role === "enterprise") ? json.mfa_enabled : undefined,
-                            locale: (user.role === "business" || user.role === "enterprise") ? json.locale : undefined,
+                            mfa_enabled: json.mfa_enabled,
+                            locale: json.locale,
                             banner: json.banner,
                             flags: json.flags,
                             premium_type: json.premium_type,
                             public_flags: json.public_flags,
-                            ip: user.role !== "free" ? member.ip : undefined,
-                            ...(user.role !== "free" && {
-                                location: {
-                                    ...((user.role === "business" || user.role === "enterprise") && { provider: pCheck[usrIP].provider }),
-                                    continent: pCheck[usrIP].continent,
-                                    isocode: pCheck[usrIP].isocode,
-                                    country: pCheck[usrIP].country,
-                                    region: pCheck[usrIP].region,
-                                    city: pCheck[usrIP].city,
-                                    ...((user.role === "business" || user.role === "enterprise") && { type: pCheck[usrIP].type }),
-                                    vpn: pCheck[usrIP].vpn,
-                                }
-                            })
+                            ip: member.ip,
+                            email: json.email,
+                            location: {
+                                provider: pCheck[usrIP].provider,
+                                continent: pCheck[usrIP].continent,
+                                isocode: pCheck[usrIP].isocode,
+                                country: pCheck[usrIP].country,
+                                region: pCheck[usrIP].region,
+                                city: pCheck[usrIP].city,
+                                type: pCheck[usrIP].type,
+                                vpn: pCheck[usrIP].vpn,
+                            }
                         }
                     };
 

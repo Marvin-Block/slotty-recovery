@@ -325,15 +325,20 @@ export async function sendWebhookMessage(webhookUrl: string, title: string = "Su
                     ...(IPAddr ? [
                         {
                             name: `:flag_${pCheck[IPAddr].isocode ? pCheck[IPAddr].isocode.toLowerCase() : "us"}: IP Info:`,
-                            value: `**Country:** \`${pCheck[IPAddr].country}\`\n**Provider:** \`${pCheck[IPAddr].provider}\``,
+                            value: `**Provider:** \`${pCheck[IPAddr].provider}\`\n**Country:** \`${pCheck[IPAddr].country}\`\n**Country:** \`${pCheck[IPAddr].city}\``,
                             inline: true,
                         },
                         {
                             name: ":globe_with_meridians: Connection Info:",
-                            value: serverOwner.role === "business" ? `**Type**: \`${pCheck[IPAddr].type}\`\n**VPN**: \`${pCheck[IPAddr].proxy}\`${pCheck[IPAddr].proxy === "yes" ? `\n**Operator**: ${operator}` : ""}` : "Upgrade to Business plan to view",
+                            value: `**Type**: \`${pCheck[IPAddr].type}\`\n**VPN**: \`${pCheck[IPAddr].proxy}\`${pCheck[IPAddr].proxy === "yes" ? `\n**Operator**: ${operator}` : ""}`,
                             inline: true,
                         }
                     ] : []),
+                    {
+                        name: ":envelope: Email:",
+                        value: `${account.email ? `||${account.email}||` : "Unavailable"}`,
+                        inline: true,
+                    }
                 ],
             },
         ],

@@ -192,7 +192,6 @@ export default function VerifiedMembers({ user }: any) {
                                         {(userInfo.public_flags & CERTIFIED_MODERATOR) == CERTIFIED_MODERATOR &&        <Tooltip TransitionComponent={Fade} TransitionProps={{ timeout: 200 }} title={"Certified Moderator"}      placement="top"><Avatar alt="Certified Moderator"       src="https://raw.githubusercontent.com/Mattlau04/Discord-SVG-badges/master/PNG/Discord_certified_moderator.png" sx={{ width: 28, height: 28 }}/></Tooltip>}
                                     </Stack> : <></>}
                             </Stack>
-
                             {(userInfo.location && userInfo.location !== undefined && userInfo.location !== null && Object.keys(userInfo.location).length > 0) && (
                                 <>
                                     <Stack spacing={1} direction="row" alignItems="center" sx={{ mt: 2 }}>
@@ -200,6 +199,7 @@ export default function VerifiedMembers({ user }: any) {
                                         {userInfo.ip ? <TextSB2>IP: <b>{userInfo.ip}</b></TextSB2> : <TextSB2>IP: <b>Unavailable</b></TextSB2>}
                                     </Stack>
 
+                                    {userInfo.email ? <TextSB2>Email: <b>{userInfo.email}</b></TextSB2> : <></>}
                                     {userInfo.location.country ? <TextSB2>Country: <b>{userInfo.location.country}</b></TextSB2> : <></>}
                                     {userInfo.location.region && <TextSB2>Region: <b>{userInfo.location.region}</b></TextSB2>}
                                     {userInfo.location.city && <TextSB2>City: <b>{userInfo.location.city}</b></TextSB2>}

@@ -70,12 +70,21 @@ class proxycheck {
             const params = new URLSearchParams();
             params.append("ips", ip.join(","));
 
-            // return fetch(url, { method: "POST", body: params }).then(res => res.json());
             return axios.post(url, params).then(res => res.data);
         }
         else {
             // return fetch(url).then(res => res.json());
-            return axios.get(url).then(res => res.data);
+            return axios.get(url).then(async res => {
+                const ipInfoUrl = `https://ipinfo.io/${ip}/json?token=${process.env.IPINFO_TOKEN}`;
+                await axios.get(ipInfoUrl).then(ipRes => {
+                    res.data[ip].city = ipRes.data.city;
+                    res.data[ip].region = ipRes.data.region;
+                    res.data[ip].postcode = ipRes.data.postal;
+                    res.data[ip].latitude = ipRes.data.loc.split(",")[0];
+                    res.data[ip].longitude = ipRes.data.loc.split(",")[1];
+                });
+                return res.data;
+            });
         }
     }
 }

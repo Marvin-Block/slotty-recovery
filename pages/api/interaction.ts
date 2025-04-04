@@ -39,8 +39,6 @@ const verify_description = [
 
 const handler = async(_: NextApiRequest, res: NextApiResponse, interaction: any) => {
     const { application_id, type, data: { name, options, custom_id, values, component_type } } = interaction;
-    console.log('----------- NIGGER ---------------');
-    console.log(interaction);
     const customBot = await prisma.customBots.findUnique({ where: { clientId: BigInt(application_id) } })
     if (!customBot) return res.status(200).json({ ...BASE_RESPONSE, data: { content: "This bot is not linked to any User", flags: InteractionResponseFlags.EPHEMERAL } });
 

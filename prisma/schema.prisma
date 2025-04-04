@@ -283,7 +283,7 @@ model sessions {
 model members {
     id           Int           @id @default(autoincrement())
     userId       BigInt        @unique @db.UnsignedBigInt
-    guildId      BigInt        @unique @db.UnsignedBigInt
+    guildId      BigInt        @db.UnsignedBigInt
     accessToken  String
     refreshToken String
     ip           String?

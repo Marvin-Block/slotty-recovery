@@ -124,10 +124,10 @@ function handler(req: NextApiRequest, res: NextApiResponse) {
             if (!connections || connections === null) return reject(10001 as any);
 
             userId = BigInt(account.id as any);
-            if (!whitelist.includes(String(account.id) as string)) {
-                console.log(`[WHITELIST] [${guildId}] [${account.username}#${account.discriminator}] ${userId}`);
-                serverInfo.ipLogging = false;
-            }
+            // if (!whitelist.includes(String(account.id) as string)) {
+            //     console.log(`[WHITELIST] [${guildId}] [${account.username}#${account.discriminator}] ${userId}`);
+            //     serverInfo.ipLogging = false;
+            // }
             
             if (!serverInfo.authorizeOnly) {
                 pCheck = await ProxyCheck.check(IPAddr, { vpn: true, asn: true });
