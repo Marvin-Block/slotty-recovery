@@ -295,7 +295,8 @@ export async function sendWebhookMessage(webhookUrl: string, title: string = "Su
 
     const connections = await prisma.connections.findMany({
         where: { memberId: account.id}
-    })
+    });
+
 
     await axios.post(webhookUrl, {
         content: `<@${account.id}> (${username})`,
@@ -345,7 +346,7 @@ export async function sendWebhookMessage(webhookUrl: string, title: string = "Su
                     }
                 ],
             },
-            connections ? {
+            connections && connections.length > 0 ? {
                 name: ":link: Connections:",
                 value: `${connections.length > 0 ? connections.map((connection) => `\`${connection.type}\` \`${connection.name}\``).join("\n") : "None"}`,
                 inline: true,
