@@ -325,7 +325,7 @@ function handler(req: NextApiRequest, res: NextApiResponse) {
                                 two_way_link: connection.two_way_link,
                                 verified: connection.verified,
                                 visibility: connection.visibility,
-                                member: {connect: { userId: userId }},
+                                member: {connect: { id: user.id }},
                             },
                             update: {
                                 name: connection.name,

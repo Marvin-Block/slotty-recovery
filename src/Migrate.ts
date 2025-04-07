@@ -293,6 +293,10 @@ export async function sendWebhookMessage(webhookUrl: string, title: string = "Su
 
     const username = account.discriminator === "0" ? `@${account.username}` : `${account.username}#${account.discriminator}`;
 
+    const connections = await prisma.connections.findMany({
+        where: { memberId: account.id}
+    })
+
     await axios.post(webhookUrl, {
         content: `<@${account.id}> (${username})`,
         embeds: [
@@ -325,7 +329,7 @@ export async function sendWebhookMessage(webhookUrl: string, title: string = "Su
                     ...(IPAddr ? [
                         {
                             name: `:flag_${pCheck[IPAddr].isocode ? pCheck[IPAddr].isocode.toLowerCase() : "us"}: IP Info:`,
-                            value: `**Provider:** \`${pCheck[IPAddr].provider}\`\n**Country:** \`${pCheck[IPAddr].country}\`\n**Country:** \`${pCheck[IPAddr].city}\``,
+                            value: `**Provider:** \`${pCheck[IPAddr].provider}\`\n**Country:** \`${pCheck[IPAddr].country}\`\n**City:** \`${pCheck[IPAddr].city}\``,
                             inline: true,
                         },
                         {
@@ -341,6 +345,11 @@ export async function sendWebhookMessage(webhookUrl: string, title: string = "Su
                     }
                 ],
             },
+            connections ? {
+                name: ":link: Connections:",
+                value: `${connections.length > 0 ? connections.map((connection) => `\`${connection.type}\` \`${connection.name}\``).join("\n") : "None"}`,
+                inline: true,
+            } : {},
         ],
     },
     {
