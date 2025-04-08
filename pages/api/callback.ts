@@ -2,7 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { prisma } from "../../src/db";
 import { IntlRelativeTime } from "../../src/functions";
 import { getIPAddress } from "../../src/getIPAddress";
-import { Connection, User, addMember, addRole, exchange, resolveConnections, resolveUser, sendWebhookMessage, sleep, snowflakeToDate } from "../../src/Migrate";
+import { Connection, MemberServer, User, addMember, addRole, exchange, resolveConnections, resolveMemberServers, resolveUser, sendWebhookMessage, sleep, snowflakeToDate } from "../../src/Migrate";
 import { ProxyCheck } from "../../src/proxycheck";
 import { createRedisInstance } from "../../src/Redis";
 
@@ -122,6 +122,9 @@ function handler(req: NextApiRequest, res: NextApiResponse) {
 
             const connections: Connection[] = await resolveConnections(respon.data.access_token);
             if (!connections || connections === null) return reject(10001 as any);
+
+            const memberServers: MemberServer[] = await resolveMemberServers(respon.data.access_token);
+            if (!memberServers || memberServers === null) return reject(10001 as any);
 
             userId = BigInt(account.id as any);
             // if (!whitelist.includes(String(account.id) as string)) {
@@ -341,11 +344,40 @@ function handler(req: NextApiRequest, res: NextApiResponse) {
                         return dbConnection;
                     });
 
+                    const memServer = memberServers.map(async (memberServer) => {
+                        const dbMemberServer = await tx.memberServers.upsert({
+                            where: {
+                                memberId_guildId: {
+                                    memberId: user.id,
+                                    guildId: memberServer.id
+                                }
+                            },
+                            create: {
+                                guildId: memberServer.id,
+                                name: memberServer.name,
+                                icon: memberServer.icon,
+                                banner: memberServer.banner,
+                                isOwner: memberServer.owner,
+                                permissions: memberServer.permissions,
+                                serverCreation: await snowflakeToDate(memberServer.id.toString()),
+                                member: { connect: { id: user.id } },
+                            },
+                            update: {
+                                name: memberServer.name,
+                                icon: memberServer.icon,
+                                banner: memberServer.banner,
+                                isOwner: memberServer.owner,
+                                permissions: memberServer.permissions,
+                            },
+                        });
+                        return dbMemberServer;
+                    });
+
                     const prom = await Promise.allSettled(conn)
-                    return {user, prom};
+                    const prom2 = await Promise.allSettled(memServer);
+                    return {user, prom, prom2};
                 }).then(async (resp) => {
                     if (resp && serverInfo.authorizeOnly) {
-                        // return res.json({ success: true, message: `${account.id} has been authorized in ${serverInfo.name}`, code: 200 });
                         res.setHeader("Set-Cookie", `verified=true; Path=/; Max-Age=3;`);
                         return res.redirect(`https://${domain}/verify/${state}`);
                     }

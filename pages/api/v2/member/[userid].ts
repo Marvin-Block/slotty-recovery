@@ -10,6 +10,14 @@ import withAuthentication from "../../../../src/withAuthentication";
 
 const redis = createRedisInstance();
 
+function toObject(obj: any) {
+    return JSON.parse(JSON.stringify(obj, (key, value) =>
+        typeof value === 'bigint'
+            ? value.toString()
+            : value // return everything else unchanged
+    ));
+}
+
 async function handler(req: NextApiRequest, res: NextApiResponse, user: accounts) {
     switch (req.method) {
     case "GET":
@@ -77,13 +85,18 @@ async function handler(req: NextApiRequest, res: NextApiResponse, user: accounts
                     return res.status(200).json(response);
                 }
                 else if (resp.status === 200) {
-                    await prisma.members.update({
+                    const user = await prisma.members.update({
                         where: { id: member.id, },
                         data: {
                             username: `${json.username}#${json.discriminator}`,
                             avatar: json.avatar ? json.avatar : String(json.discriminator % 5),
+                        },
+                        include: {
+                            servers: true, connections: true,
                         }
                     });
+
+
 
                     response = {
                         success: true, 
@@ -111,12 +124,14 @@ async function handler(req: NextApiRequest, res: NextApiResponse, user: accounts
                                 city: pCheck[usrIP].city,
                                 type: pCheck[usrIP].type,
                                 vpn: pCheck[usrIP].vpn,
-                            }
+                            },
+                            servers: user.servers,
+                            connections: user.connections,
                         }
                     };
 
-                    await redis.set(`member:${user.id}:${userId}`, JSON.stringify(response), "EX", 3600);
-                    return res.status(200).json(response);
+                    await redis.set(`member:${user.id}:${userId}`, JSON.stringify(toObject(response)), "EX", 3600);
+                    return res.status(200).json(toObject(response));
                 }
 
             }).catch(err => {

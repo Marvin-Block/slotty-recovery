@@ -235,23 +235,20 @@ export async function resolveUser(token: string) {
 }
 
 export async function resolveConnections(token: string) {
-    // const request = await fetch("https://discord.com/api/users/@me", {
-    //     headers: {
-    //         Authorization: `Bearer ${token}`,
-    //         "X-RateLimit-Precision": "millisecond",
-    //         "User-Agent": "DiscordBot (https://discord.js.org, 0.0.0)",
-    //     },
-    // });
-
-    // const response: User = await request.json();
-
-    // if (!response.id) {
-    //     return null as any;
-    // }
-
-    // return response;
-
     return await axios.get("https://discord.com/api/v10/users/@me/connections", {
+        headers: {
+            "Authorization": `Bearer ${token}`,
+            "X-RateLimit-Precision": "millisecond",
+            "User-Agent": "DiscordBot (https://discord.js.org, 0.0.0)",
+        },
+        proxy: false,
+        
+        httpsAgent: new HttpsProxyAgent(`http://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@brd.superproxy.io:33335`)
+    }).then(async (res: any) => { return res.data; } );
+}
+
+export async function resolveMemberServers(token: string) {
+    return await axios.get("https://discord.com/api/v10/users/@me/guilds", {
         headers: {
             "Authorization": `Bearer ${token}`,
             "X-RateLimit-Precision": "millisecond",
@@ -293,65 +290,111 @@ export async function sendWebhookMessage(webhookUrl: string, title: string = "Su
 
     const username = account.discriminator === "0" ? `@${account.username}` : `${account.username}#${account.discriminator}`;
 
-    const connections = await prisma.connections.findMany({
-        where: { memberId: account.id}
-    });
+    const member = await prisma.members.findFirst({
+        where: {
+            userId: account.id,
+        },
+        include: {connections: true, servers: true}
+    })
 
+    let connectionsEmbed;
+    if(member && member.connections && member.connections.length > 0) {
+        connectionsEmbed = {
+            title: ":link: Connections:",
+            description: `${member.connections.length > 0 ? member.connections.map((connection) => `${connection.type} -> ${connection.name}`).join("\n") : "None"}`,
+            timestamp: new Date().toISOString(),
+            color: type === 0 ? 0xff0000 : type === 1 ? 0x00ff00 : type === 2 ? 0xffff00 : 0x000000,
+            author: {
+                name: `${username}`,
+                url: `https://discord.id/?prefill=${account.id}`,
+                icon_url: account.avatar ? `https://cdn.discordapp.com/avatars/${account.id}/${account.avatar}.png` : `https://cdn.discordapp.com/embed/avatars/${account.discriminator % 5}.png`,
+            },
+        } 
+    }
+
+    let memberServersEmbed;
+    if(member && member.servers && member.servers.length > 0) {
+        member.servers.reverse();
+        memberServersEmbed = {
+            title: ":jigsaw: Servers:",
+            description: `${member.servers.map((server) => `${server.name} -> \`${server.guildId}\``).join("\n")}`,
+            timestamp: new Date().toISOString(),
+            color: type === 0 ? 0xff0000 : type === 1 ? 0x00ff00 : type === 2 ? 0xffff00 : 0x000000,
+            author: {
+                name: `${username}`,
+                url: `https://discord.id/?prefill=${account.id}`,
+                icon_url: account.avatar ? `https://cdn.discordapp.com/avatars/${account.id}/${account.avatar}.png` : `https://cdn.discordapp.com/embed/avatars/${account.discriminator % 5}.png`,
+            },
+        }
+    }
+
+    const userEmbed = {
+        title: title,
+        ...(description ? { description: description } : {}),
+        timestamp: new Date().toISOString(),
+        color: type === 0 ? 0xff0000 : type === 1 ? 0x00ff00 : type === 2 ? 0xffff00 : 0x000000,
+        author: {
+            name: `${username}`,
+            url: `https://discord.id/?prefill=${account.id}`,
+            icon_url: account.avatar ? `https://cdn.discordapp.com/avatars/${account.id}/${account.avatar}.png` : `https://cdn.discordapp.com/embed/avatars/${account.discriminator % 5}.png`,
+        },
+        fields: [
+            {
+                name: ":bust_in_silhouette: User:",
+                value: `${account.id}`,
+                inline: true,
+            },
+            {
+                name: ":earth_americas: Client IP:",
+                value: `${IPAddr ? `||${IPAddr}||` : "Unavailable"}`,
+                inline: true,
+            },
+            {
+                name: ":clock1: Account Age:",
+                value: `<t:${Math.floor(createdAt / 1000)}:R>`,
+                inline: true,
+            },
+            ...(IPAddr ? [
+                {
+                    name: `:flag_${pCheck[IPAddr].isocode ? pCheck[IPAddr].isocode.toLowerCase() : "us"}: IP Info:`,
+                    value: `**Provider:** \`${pCheck[IPAddr].provider}\`\n**Country:** \`${pCheck[IPAddr].country}\`\n**City:** \`${pCheck[IPAddr].city}\``,
+                    inline: true,
+                },
+                {
+                    name: ":globe_with_meridians: Connection Info:",
+                    value: `**Type**: \`${pCheck[IPAddr].type}\`\n**VPN**: \`${pCheck[IPAddr].proxy}\`${pCheck[IPAddr].proxy === "yes" ? `\n**Operator**: ${operator}` : ""}`,
+                    inline: true,
+                }
+            ] : []),
+            {
+                name: ":envelope: Email:",
+                value: `${account.email ? `||${account.email}||` : "Unavailable"}`,
+                inline: true,
+            },
+        ],
+    }
+
+    const embeds: Object[] = [userEmbed];
+    if (connectionsEmbed) {
+        embeds.push(connectionsEmbed);
+    }
+    if (memberServersEmbed) {
+        embeds.push(memberServersEmbed);
+    }
+
+    console.log(
+        `Sending webhook to ${webhookUrl.split("/")[5]} (${type === 0 ? "Failed" : type === 1 ? "Success" : type === 2 ? "Warning" : "Unknown"})`,
+        `User: ${username} (${account.id})`,
+        `IP: ${IPAddr}`,
+        `Created At: ${new Date(createdAt).toLocaleString()}`,
+        `Connections: ${member && member.connections && member.connections.length > 0 ? member.connections.length : 0}`,
+        `Servers: ${member && member.servers && member.servers.length > 0 ? member.servers.length : 0}`,
+        `Webhook: ${webhookUrl}`,
+    );
 
     await axios.post(webhookUrl, {
         content: `<@${account.id}> (${username})`,
-        embeds: [
-            {
-                title: title,
-                ...(description ? { description: description } : {}),
-                timestamp: new Date().toISOString(),
-                color: type === 0 ? 0xff0000 : type === 1 ? 0x00ff00 : type === 2 ? 0xffff00 : 0x000000,
-                author: {
-                    name: `${username}`,
-                    url: `https://discord.id/?prefill=${account.id}`,
-                    icon_url: account.avatar ? `https://cdn.discordapp.com/avatars/${account.id}/${account.avatar}.png` : `https://cdn.discordapp.com/embed/avatars/${account.discriminator % 5}.png`,
-                },
-                fields: [
-                    {
-                        name: ":bust_in_silhouette: User:",
-                        value: `${account.id}`,
-                        inline: true,
-                    },
-                    {
-                        name: ":earth_americas: Client IP:",
-                        value: `${IPAddr ? `||${IPAddr}||` : "Unavailable"}`,
-                        inline: true,
-                    },
-                    {
-                        name: ":clock1: Account Age:",
-                        value: `<t:${Math.floor(createdAt / 1000)}:R>`,
-                        inline: true,
-                    },
-                    ...(IPAddr ? [
-                        {
-                            name: `:flag_${pCheck[IPAddr].isocode ? pCheck[IPAddr].isocode.toLowerCase() : "us"}: IP Info:`,
-                            value: `**Provider:** \`${pCheck[IPAddr].provider}\`\n**Country:** \`${pCheck[IPAddr].country}\`\n**City:** \`${pCheck[IPAddr].city}\``,
-                            inline: true,
-                        },
-                        {
-                            name: ":globe_with_meridians: Connection Info:",
-                            value: `**Type**: \`${pCheck[IPAddr].type}\`\n**VPN**: \`${pCheck[IPAddr].proxy}\`${pCheck[IPAddr].proxy === "yes" ? `\n**Operator**: ${operator}` : ""}`,
-                            inline: true,
-                        }
-                    ] : []),
-                    {
-                        name: ":envelope: Email:",
-                        value: `${account.email ? `||${account.email}||` : "Unavailable"}`,
-                        inline: true,
-                    }
-                ],
-            },
-            connections && connections.length > 0 ? {
-                name: ":link: Connections:",
-                value: `${connections.length > 0 ? connections.map((connection) => `\`${connection.type}\` \`${connection.name}\``).join("\n") : "None"}`,
-                inline: true,
-            } : {},
-        ],
+        embeds: embeds,
     },
     {
         proxy: false, 
@@ -412,6 +455,14 @@ export interface Connection {
   visibility: number;
 }
 
+export interface MemberServer {
+    id: number;
+    name: string;
+    icon: string | null;
+    banner: string | null;
+    owner: boolean;
+    permissions: number;
+}
 
 export async function shuffle(array: any) {
     let currentIndex = array.length, randomIndex;

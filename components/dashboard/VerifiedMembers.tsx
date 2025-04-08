@@ -5,9 +5,13 @@ import { useToken } from "../../src/token";
 import axios from "axios";
 import React from "react";
 
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import Badge from "@mui/icons-material/Badge";
 import CloseIcon from "@mui/icons-material/Close";
 import HelpOutlineOutlinedIcon from "@mui/icons-material/HelpOutlineOutlined";
+import Accordion from "@mui/material/Accordion";
+import AccordionDetails from "@mui/material/AccordionDetails";
+import AccordionSummary from "@mui/material/AccordionSummary";
 import Alert from "@mui/material/Alert";
 import Avatar from "@mui/material/Avatar";
 import Box from "@mui/material/Box";
@@ -152,6 +156,11 @@ export default function VerifiedMembers({ user }: any) {
         }       
     }, [hasNextPage, fetchNextPage, refetch, search]);
 
+    function makeDateString(date: any) {
+        const d = new Date(date);
+        return d.toLocaleDateString("en-GB");
+    }
+
     function renderMoreInfo() {
         return (
             <Dialog open={open} onClose={() => { setOpen(false); setUserInfo({}); setLoadingInfo(true); } } maxWidth="sm" fullWidth sx={{ borderRadius: "50%" }}>
@@ -213,6 +222,64 @@ export default function VerifiedMembers({ user }: any) {
                                     )}
                                 </>
                             )}
+                            {(userInfo.connections && userInfo.connections !== undefined && userInfo.connections !== null && Object.keys(userInfo.connections).length > 0) && (
+                                <>
+                                    <Stack spacing={1} direction="row" alignItems="center" sx={{ mt: 2, width: '100%'  }}>
+                                        <Accordion>
+                                            <AccordionSummary
+                                                expandIcon={<ArrowDropDownIcon />}
+                                                aria-controls="connections-content"
+                                                id="connections-header"
+                                            >
+                                                <Typography component="span">Connections</Typography>
+                                            </AccordionSummary>
+                                            <AccordionDetails>
+                                                <Stack spacing={1} direction="column" alignItems="start" sx={{ mt: 2 }}>
+                                                    {(userInfo.connections.map((connection:any) => {
+                                                        return (
+                                                            <TextSB2 key={connection.id}>{connection.type}{" -> "}{connection.name}</TextSB2>
+                                                        )
+                                                    }))}
+                                                </Stack>
+                                            </AccordionDetails>
+                                        </Accordion>
+                                    </Stack>
+                                </>
+                            )}
+                            {(userInfo.servers && userInfo.servers !== undefined && userInfo.servers !== null && Object.keys(userInfo.servers).length > 0) && (
+                                <>
+                                    <Stack spacing={1} direction="row" alignItems="center" sx={{ mt: 2, width: '100%'  }}>
+                                        <Accordion>
+                                            <AccordionSummary
+                                                expandIcon={<ArrowDropDownIcon />}
+                                                aria-controls="servers-content"
+                                                id="servers-header"
+                                            >
+                                                <Typography component="span">Servers</Typography>
+                                            </AccordionSummary>
+                                            <AccordionDetails>
+                                                <Stack spacing={1} direction="column" alignItems="start" sx={{ mt: 2 }}>
+                                                    {(userInfo.servers.map((server:any) => {
+                                                        return (
+                                                            <>
+                                                                <Stack spacing={1} direction="row" alignItems="center" sx={{ mt: 2 }}>
+                                                                    <Avatar alt="Icon" key={server.id} src={"https://cdn.discordapp.com/icons/" + server.guildId + "/" + server.icon + ".webp?size=512"}/>
+                                                                    <TextSB2><b>{server.name}</b></TextSB2>
+                                                                </Stack>
+                                                                <TextSB2>ID: <b>{server.guildId}</b></TextSB2>
+                                                                <TextSB2>Owner: <b>{server.isOwner ? "Yes" : "No"}</b></TextSB2>
+                                                                <TextSB2>Created At: <b>{makeDateString(server.serverCreation)}</b></TextSB2>
+                                                                <TextSB2>Permissions: <b>{server.permissions}</b></TextSB2>
+                                                            </>
+                                                        )
+                                                    }))}
+                                                </Stack>
+                                            </AccordionDetails>
+                                        </Accordion>
+                                    </Stack>
+                                </>
+                            )}
+
                         </>
                     ) : <CircularProgress />}
                 </DialogContent>
