@@ -5,7 +5,7 @@ import { InteractionResponseFlags, } from "discord-interactions";
 import { HttpsProxyAgent } from "https-proxy-agent";
 import { NextApiRequest, NextApiResponse } from "next";
 import { prisma } from "../../src/db";
-import { addMember, addRole, refreshToken, shuffle } from "../../src/Migrate";
+import { addMember, addRole, refreshToken, shuffle } from '../../src/Migrate';
 import withDiscordInteraction from "../../src/withDiscordInteraction";
 import withErrorHandler from "../../src/withErrorHandler";
 import { countries } from "../dashboard/blacklist";
@@ -257,22 +257,65 @@ const handler = async(_: NextApiRequest, res: NextApiResponse, interaction: any)
             var user   = options.find((o: any) => o.name == "user")?.value;
             if (!userId && !user) return res.status(200).json({ ...BASE_RESPONSE, data: { content: "Please provide either a user ID or mention a user.", flags: InteractionResponseFlags.EPHEMERAL } });
 
-            var member = await prisma.members.findUnique({ where: { userId_guildId: { userId: userId ? BigInt(userId) : BigInt(user) as any, guildId: BigInt(interaction.guild_id) } } });
+            var member = await prisma.members.findUnique(
+                { 
+                    where: 
+                    { 
+                        userId_guildId: 
+                        { 
+                            userId: userId ? BigInt(userId) : BigInt(user) as any,
+                            guildId: BigInt(interaction.guild_id)
+                        } 
+                    },
+                    include: {servers: true, connections: true}
+                });
             if (!member) return res.status(200).json({ ...BASE_RESPONSE, data: { content: "Member did not verify in this server", flags: InteractionResponseFlags.EPHEMERAL } });
+
+            const userEmbed = {
+                title: `Verified Member Info (${serverInfo.name})`,
+                color: 789517,
+                description: 
+                        `> **Username**: ${member.username.endsWith("#0") ? `@${member.username.slice(0, -2)}` : member.username}\n` +
+                        `> **User ID**: ${member.userId}\n` +
+                        `> **IP**: [${member.ip ?? "Unknown"}](https://ipinfo.io/${member.ip ?? "0.0.0.0"})\n` +
+                        `> **Location**: ${(member.city && member.state && member.country) ? `:flag_${countries.find((c: any) => c.name === member?.country)?.code.toLowerCase()}: [${member.city}, ${member.state}, ${member.country}](https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${member.city}, ${member.state}, ${member.country}`)})` : "Unknown"}\n` +
+                        `> **VPN**: ${member.vpn ? ":white_check_mark: Yes" : ":x: No"}\n` +
+                        `> **Verified Date**: <t:${Math.floor(member.createdAt.getTime() / 1000)}:R> (<t:${Math.floor(member.createdAt.getTime() / 1000)}:f>)\n`
+            }
+
+            const connectionsEmbed = {
+                title: `Verified Member Info (${serverInfo.name}) - Connections`,
+                color: 789517,
+                description: 'No connections found.'
+            }
+
+            const serversEmbed = {
+                title: `Verified Member Info (${serverInfo.name}) - Servers`,
+                color: 789517,
+                description: 'No servers found.'
+            }
+
+            let memberConnections = "";
+            let memberServers = "";
+
+
+            if(member.connections.length > 0) {
+                memberConnections = `${member.connections.length > 0 ? member.connections.map((connection) => `${connection.type} -> ${connection.name}`).join("\n") : "None"}`
+                connectionsEmbed.description = memberConnections
+            }
+            if(member.servers.length > 0) {
+                memberServers = `${member.servers.length > 0 ? member.servers.map((server) => `${server.name} \`${server.guildId}\``).join("\n") : "None"}`
+            }
+
+            if(memberServers.length > 4096) {
+                serversEmbed.description = `${memberServers.slice(0, 4096)}...`
+            } else {
+                serversEmbed.description = memberServers
+            }
 
             return res.status(200).json({ ...BASE_RESPONSE, data: {
                 content: `<@${member.userId}> ${member.username} (${member.userId}) - ${member.ip ?? "Unknown"} -  ${member.vpn ? "VPN" : "No VPN"} - <t:${Math.floor(member.createdAt.getTime() / 1000)}:R>`,
-                embeds: [{
-                    title: `Verified Member Info (${serverInfo.name})`,
-                    description: 
-                            `> **Username**: ${member.username.endsWith("#0") ? `@${member.username.slice(0, -2)}` : member.username}\n` +
-                            `> **User ID**: ${member.userId}\n` +
-                            `> **IP**: [${member.ip ?? "Unknown"}](https://ipinfo.io/${member.ip ?? "0.0.0.0"})\n` +
-                            `> **Location**: ${(member.city && member.state && member.country) ? `:flag_${countries.find((c: any) => c.name === member?.country)?.code.toLowerCase()}: [${member.city}, ${member.state}, ${member.country}](https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${member.city}, ${member.state}, ${member.country}`)})` : "Unknown"}\n` +
-                            `> **VPN**: ${member.vpn ? ":white_check_mark: Yes" : ":x: No"}\n` +
-                            `> **Verified Date**: <t:${Math.floor(member.createdAt.getTime() / 1000)}:R> (<t:${Math.floor(member.createdAt.getTime() / 1000)}:f>)\n`,
-                    color: 789517
-                }],
+                embeds: [userEmbed, connectionsEmbed, serversEmbed],
                 flags: InteractionResponseFlags.EPHEMERAL
             } });
         case "blacklist":
@@ -288,7 +331,7 @@ const handler = async(_: NextApiRequest, res: NextApiResponse, interaction: any)
             var user   = options.find((o: any) => o.name == "user")?.value;
             if (!userId && !user) return res.status(200).json({ ...BASE_RESPONSE, data: { content: "Please provide either a user ID or mention a user.", flags: InteractionResponseFlags.EPHEMERAL } });
 
-            var member = await prisma.members.findUnique({ where: { userId_guildId: { userId: userId ? BigInt(userId) : BigInt(user) as any, guildId: BigInt(interaction.guild_id) } } });
+            var member = await prisma.members.findUnique({ where: { userId_guildId: { userId: userId ? BigInt(userId) : BigInt(user) as any, guildId: BigInt(interaction.guild_id) } }, include: { servers: true, connections: true } });
             if (!member) return res.status(200).json({ ...BASE_RESPONSE, data: { content: "Member did not verify in this server", flags: InteractionResponseFlags.EPHEMERAL } });
 
             var blacklisted = await prisma.blacklist.findFirst({ where: { guildId: BigInt(interaction.guild_id), value: (userId ?? user) as any, type: 0 } });

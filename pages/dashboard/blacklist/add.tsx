@@ -1,31 +1,31 @@
 import { useRouter } from "next/router";
-import { useInfiniteQuery, useQuery } from "react-query";
+import { useQuery } from "react-query";
 import { useToken } from "../../../src/token";
 
 import NavBar from "../../../components/dashboard/navBar";
 import getUser from "../../../src/dashboard/getUser";
 
-import Box from "@mui/material/Box";
-import Toolbar from "@mui/material/Toolbar";
-import Typography from "@mui/material/Typography";
-import Container from "@mui/material/Container";
-import Paper from "@mui/material/Paper";
-import CardContent from "@mui/material/CardContent";
-import Button from "@mui/material/Button";
-import Stack from "@mui/material/Stack";
-import TextField from "@mui/material/TextField";
-import { useEffect, useMemo, useState } from "react";
-import axios from "axios";
 import Alert from "@mui/lab/Alert";
+import { Avatar } from "@mui/material";
 import Badge from "@mui/material/Badge";
-import Snackbar from "@mui/material/Snackbar";
-import Skeleton from "@mui/material/Skeleton";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import CardContent from "@mui/material/CardContent";
+import CircularProgress from "@mui/material/CircularProgress";
+import Container from "@mui/material/Container";
 import FormControl from "@mui/material/FormControl";
 import InputLabel from "@mui/material/InputLabel";
-import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
-import CircularProgress from "@mui/material/CircularProgress";
-import { Avatar } from "@mui/material";
+import Paper from "@mui/material/Paper";
+import Select from "@mui/material/Select";
+import Skeleton from "@mui/material/Skeleton";
+import Snackbar from "@mui/material/Snackbar";
+import Stack from "@mui/material/Stack";
+import TextField from "@mui/material/TextField";
+import Toolbar from "@mui/material/Toolbar";
+import Typography from "@mui/material/Typography";
+import axios from "axios";
+import { useState } from "react";
 import { countries } from "./index";
 
 
@@ -84,7 +84,6 @@ export default function Blacklist() {
                                     {notiTextI}
                                 </Alert>
                             </Snackbar>
-                           
                             <Paper variant="outlined" sx={{ borderRadius: "1rem", padding: "0.5rem", marginTop: "1rem" }}>
                                 <CardContent sx={{ pb: "1rem !important" }}>
                                     <form>
@@ -101,6 +100,7 @@ export default function Blacklist() {
                                                 <InputLabel htmlFor="blacklist-type">Blacklist Type</InputLabel>
                                                 <Select value={blacklistType} onChange={(e) => setBlacklistType(e.target.value)} name="blacklist-type" label="Blacklist Type" id="blacklist-type">
                                                     <MenuItem value="user">User</MenuItem>
+                                                    <MenuItem value="specificServer">Server</MenuItem>
                                                     <MenuItem value="ip">IP</MenuItem>
                                                     <MenuItem value="iso">Country</MenuItem>
                                                     <MenuItem value="asn">ASN (Business)</MenuItem>
@@ -110,6 +110,8 @@ export default function Blacklist() {
                                             {/* input: UserId, IP Address, ASN Number, Country */}
                                             {blacklistType === "user" ? (
                                                 <TextField required fullWidth label="User ID" placeholder="9812345678912345678" variant="outlined" value={blacklist} onChange={(e) => setBlacklist(e.target.value)} inputProps={{ minLength: 17, maxLength: 19, pattern: "[0-9]{17,19}" }} />
+                                            ) : blacklistType === "specificServer" ? (
+                                                <TextField required fullWidth label="Server ID" placeholder="9812345678912345678" variant="outlined" value={blacklist} onChange={(e) => setBlacklist(e.target.value)} inputProps={{ minLength: 17, maxLength: 19, pattern: "[0-9]{17,19}" }} />
                                             ) : blacklistType === "ip" ? (
                                                 <TextField required fullWidth label="IP Address" placeholder="123.212.167.89" variant="outlined" value={blacklist} onChange={(e) => setBlacklist(e.target.value)} inputProps={{ minLength: 7, maxLength: 15, pattern: "[0-9.]{7,15}" }} />
                                             ) : blacklistType === "iso" ? (
@@ -134,11 +136,9 @@ export default function Blacklist() {
                                             ) : null}
 
                                             {blacklistType !== "server" && <TextField fullWidth label="Reason" variant="outlined" value={blacklistReason} onChange={(e) => setBlacklistReason(e.target.value)} />}
-
-                                            
+                                            {blacklistType !== "specificServer" && <TextField fullWidth label="Reason" variant="outlined" value={blacklistReason} onChange={(e) => setBlacklistReason(e.target.value)} />}
 
                                             {/* select: Server */}
-
                                             {userLoading ? (
                                                 <>
                                                     <Skeleton animation="wave" variant="rectangular" width="100%" height={56} sx={{ borderRadius: "14px" }} /> 
@@ -155,6 +155,7 @@ export default function Blacklist() {
                                             )}
                                             <Button type="submit" variant="contained" onClick={(e: any) => {
                                                 e.preventDefault();
+                                                console.log(user)
                                                 axios.put("/api/v2/server/blacklist", {
                                                     type: blacklistType,
                                                     value: blacklist,
