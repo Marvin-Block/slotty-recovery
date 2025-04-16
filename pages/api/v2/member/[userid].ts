@@ -23,6 +23,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse, user: accounts
     case "GET":
         try {
             const userId: any = req.query.userid as string;
+            console.log(userId);
             if (!userId) return res.status(400).json({ success: false, message: "userid not provided." });
 
             const servers = await prisma.servers.findMany({ where: { ownerId: user.id } });
