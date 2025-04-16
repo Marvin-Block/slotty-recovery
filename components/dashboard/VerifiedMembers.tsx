@@ -163,6 +163,7 @@ export default function VerifiedMembers({ user }: any) {
     }
 
     function renderMoreInfo() {
+        console.log(userInfo);
         return (
             <Dialog open={open} onClose={() => { setOpen(false); setUserInfo({}); setLoadingInfo(true); } } maxWidth="sm" fullWidth sx={{ borderRadius: "50%" }}>
                 <DialogTitle sx={{ backgroundColor: "grey.900" }}>
