@@ -1,10 +1,8 @@
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
-import Link from "next/link";
 import NavBar from "../components/landing/NavBar";
 
-import { Stack } from "@mui/material";
 import Alert from "@mui/material/Alert";
 import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
@@ -170,7 +168,7 @@ export default function Login() {
                                 >
                                     Login
                                 </LoadingButton>
-                                <Stack direction="row" spacing={2} justifyContent="space-between">
+                                {/* <Stack direction="row" spacing={2} justifyContent="space-between">
                                     <Typography variant="body2" gutterBottom>
                                         <Link href="/forgot">
                                             Forgot password or username?
@@ -181,7 +179,7 @@ export default function Login() {
                                             {"Don't have an account? Sign Up"}
                                         </Link>
                                     </Typography>
-                                </Stack>
+                                </Stack> */}
                             </Box>
                         </form>
                     </Box>

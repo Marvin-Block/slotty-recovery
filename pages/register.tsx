@@ -13,7 +13,6 @@ import Stack from "@mui/material/Stack";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import LoadingButton from "../components/misc/LoadingButton";
-import { makeXTrack } from "../src/getIPAddress";
 
 export default function Register() {
     const [username, setUsername] = useState("");
@@ -26,7 +25,6 @@ export default function Register() {
     const [token, setToken]: any = useState();
     const captchaRef: any = useRef();
     const router = useRouter();
-    
 
     const onExpire = () => {
         setError({ status: true, message: "Captcha expired" });
@@ -52,40 +50,6 @@ export default function Register() {
     }
 
     useEffect(() => {
-        try {
-            if (token) {
-                fetch(`/api/v2/auth/register`, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "x-track": makeXTrack()
-                    },
-                    body: JSON.stringify({
-                        username: username,
-                        email: email,
-                        password: password,
-                        captcha: token,
-                        ref: router.query.r ? router.query.r : null
-                    })
-                })
-                    .then(res => res.json())
-                    .then(res => {
-                        setToken(null);
-                        if (res.success && res.token) {
-                            setError({ status: false, message: "Account created" });
-
-                            localStorage.setItem("token", res.token);
-                            router.push("/dashboard");
-                        } 
-                        else {
-                            setError({ status: true, message: res.message });
-                        }
-                    });
-            }
-        }
-        catch (err) {
-            console.error(err);
-        }
     }, [email, password, router, token, username]);
 
     return (
