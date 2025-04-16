@@ -1,9 +1,9 @@
 import { useRouter } from "next/router";
-import { useQuery } from "react-query"
+import { useEffect, useState } from "react";
+import { useQuery } from "react-query";
+import { getMemberList, getMemberStats } from "../../src/dashboard/getMembers";
 import { useToken } from "../../src/token";
 import { countries } from "./blacklist";
-import { useState, useEffect } from "react";
-import { getMemberList, getMemberStats } from "../../src/dashboard/getMembers";
 
 import NavBar from "../../components/dashboard/navBar";
 import getUser from "../../src/dashboard/getUser";
@@ -12,33 +12,33 @@ import theme from "../../src/theme";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 
+import Alert from "@mui/lab/Alert";
+import AlertTitle from "@mui/lab/AlertTitle";
+import { TableBody } from "@mui/material";
 import Avatar from "@mui/material/Avatar";
+import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import CardContent from "@mui/material/CardContent";
+import CircularProgress from "@mui/material/CircularProgress";
 import Container from "@mui/material/Container";
+import FormControl from "@mui/material/FormControl";
 import Grid from "@mui/material/Grid";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemAvatar from "@mui/material/ListItemAvatar";
 import ListItemText from "@mui/material/ListItemText";
-import Paper from "@mui/material/Paper";
-import Typography from "@mui/material/Typography";
-import CircularProgress from "@mui/material/CircularProgress";
-import Alert from "@mui/lab/Alert";
-import AlertTitle from "@mui/lab/AlertTitle";
-import Box from "@mui/material/Box";
-import Toolbar from "@mui/material/Toolbar";
-import Table from "@mui/material/Table";
-import TableRow from "@mui/material/TableRow";
-import TableCell from "@mui/material/TableCell";
-import Stack from "@mui/material/Stack";
-import FormControl from "@mui/material/FormControl";
-import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
+import Paper from "@mui/material/Paper";
+import Select from "@mui/material/Select";
 import Skeleton from "@mui/material/Skeleton";
+import Stack from "@mui/material/Stack";
+import Table from "@mui/material/Table";
+import TableCell from "@mui/material/TableCell";
+import TableRow from "@mui/material/TableRow";
+import Toolbar from "@mui/material/Toolbar";
 import Tooltip from "@mui/material/Tooltip";
+import Typography from "@mui/material/Typography";
 import { AvatarFallback } from "../../src/functions";
-import { TableBody } from "@mui/material";
 
 const ApexChart = dynamic(() => import('react-apexcharts'), { ssr: false });
 
@@ -68,7 +68,7 @@ export default function Dashboard() {
 
     useEffect(() => {
         refetchTopAnalytics();
-    }, [statType]);
+    }, [refetchTopAnalytics, statType]);
 
     if (isLoading) return <CircularProgress sx={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)" }} />
     if (isError || isError2 || newsError || recentVerifiedError || topAnalyticsError) return <div>Error</div>
