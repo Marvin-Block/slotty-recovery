@@ -23,6 +23,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse, user: accounts
     case "GET":
         try {
             const userId: any = req.query.userid as string;
+            console.log('UserID');
             console.log(userId);
             if (!userId) return res.status(400).json({ success: false, message: "userid not provided." });
 
@@ -57,6 +58,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse, user: accounts
                 validateStatus: () => true,
             }).then(async (resp) => {
                 let json = resp.data;
+                console.log('far inside api/v2/member');
                 console.log(json);
                 let usrIP: string = (member.ip != null) ? ((member.ip == "::1" || member.ip == "127.0.0.1") ? "1.1.1.1" : member.ip) : "1.1.1.1";
                 const pCheck = await ProxyCheck.check(usrIP, { vpn: true, asn: true });
