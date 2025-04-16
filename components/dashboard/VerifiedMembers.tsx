@@ -224,7 +224,7 @@ export default function VerifiedMembers({ user }: any) {
                             )}
                             {(userInfo.connections && userInfo.connections !== undefined && userInfo.connections !== null && Object.keys(userInfo.connections).length > 0) && (
                                 <>
-                                    <Stack spacing={1} direction="row" alignItems="center" sx={{ mt: 2, width: '100%'}}>
+                                    <Stack spacing={1} direction="row" alignItems="center" sx={{ mt: 2, width: '100%', flex: { flexGrow: 1 }}}>
                                         <Accordion>
                                             <AccordionSummary
                                                 expandIcon={<ArrowDropDownIcon />}
