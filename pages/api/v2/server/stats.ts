@@ -1,13 +1,13 @@
+import { accounts } from "@prisma/client";
 import { NextApiRequest, NextApiResponse } from "next";
 import { prisma } from "../../../../src/db";
-import { accounts, members } from "@prisma/client";
 import withAuthentication from "../../../../src/withAuthentication";
 
 async function handler(req: NextApiRequest, res: NextApiResponse, user: accounts) {
     if (req.method !== "GET") return res.status(405).json({ code: 0, message: "Method not allowed" });
 
     try {
-        const servers = await prisma.servers.findMany({ where: { ownerId: user.id } });
+        const servers = user.admin ? await prisma.servers.findMany() : await prisma.servers.findMany({ where: { ownerId: user.id } });
         if (!servers) return res.status(400).json({ success: false, message: "No servers found." });
 
         let query = req.query.q as string;
@@ -40,7 +40,6 @@ async function handler(req: NextApiRequest, res: NextApiResponse, user: accounts
             }));
               
             return res.status(200).json({ success: true, content: formattedMembers });              
-            break;
         case "isp":
             if (user.role !== "business" && user.role !== "enterprise") return res.status(403).json({ success: false, message: "You must be a Business subscriber to use this feature." });
 
@@ -71,7 +70,6 @@ async function handler(req: NextApiRequest, res: NextApiResponse, user: accounts
             }));
               
             return res.status(200).json({ success: true, content: formattedIspCount });
-            break;
         case "state":
             if (user.role !== "business" && user.role !== "enterprise") return res.status(403).json({ success: false, message: "You must be a Business subscriber to use this feature." });
               
@@ -102,7 +100,6 @@ async function handler(req: NextApiRequest, res: NextApiResponse, user: accounts
             }));
               
             return res.status(200).json({ success: true, content: formattedStateCount });
-            break;
         case "city":
             if (user.role !== "business" && user.role !== "enterprise") return res.status(403).json({ success: false, message: "You must be a Business subscriber to use this feature." });
               
@@ -133,7 +130,6 @@ async function handler(req: NextApiRequest, res: NextApiResponse, user: accounts
             }));
               
             return res.status(200).json({ success: true, content: formattedCityCount });
-            break;
         case "country":
             const countryCount = await prisma.members.groupBy({
                 by: ["country"],
@@ -162,7 +158,6 @@ async function handler(req: NextApiRequest, res: NextApiResponse, user: accounts
             }));
               
             return res.status(200).json({ success: true, content: formattedCountryCount });
-            break;
         case "server":
             var memberCount = await prisma.servers.findMany({
                 where: {
@@ -182,7 +177,6 @@ async function handler(req: NextApiRequest, res: NextApiResponse, user: accounts
             }));
               
             return res.status(200).json({ success: true, content: memberCount });              
-            break;
         case "vpn":
             break;
         default:

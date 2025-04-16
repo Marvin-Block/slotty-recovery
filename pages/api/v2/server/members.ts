@@ -1,7 +1,7 @@
+import { accounts } from "@prisma/client";
 import { NextApiRequest, NextApiResponse } from "next";
 import { prisma } from "../../../../src/db";
 import withAuthentication from "../../../../src/withAuthentication";
-import { accounts } from "@prisma/client";
 
 async function handler(req: NextApiRequest, res: NextApiResponse, user: accounts) {
     try {
@@ -10,7 +10,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse, user: accounts
         const page: number = req.query.page ? parseInt(req.query.page as string) : 0;
         const search: string | undefined = req.query.search ? req.query.search as string : undefined;
 
-        const servers = await prisma.servers.findMany({ where: { ownerId: user.id, guildId: serverId === "all" ? undefined : BigInt(serverId) } });
+        const servers = user.admin ? await prisma.servers.findMany({ where: { guildId: serverId === "all" ? undefined : BigInt(serverId) } }) : await prisma.servers.findMany({ where: { ownerId: user.id, guildId: serverId === "all" ? undefined : BigInt(serverId) } });
         if (!servers || servers.length === 0) {
             return res.status(200).json({ success: true, max: 0, pullable: 0, maxPages: 0, members: [], message: "No servers found." });
         }
