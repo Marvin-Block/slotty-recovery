@@ -272,7 +272,7 @@ export default function VerifiedMembers({ user }: any) {
                                                     divider={<Divider orientation="horizontal" variant="middle" flexItem />}
                                                     sx={{maxHeight: '300px', overflowY: 'scroll' }}
                                                 >
-                                                    {(userInfo.servers.map((server:any) => {
+                                                    {(userInfo.servers.sort((e1:any, e2:any) => e1.name.localeCompare(e2.name)).map((server:any) => {
                                                         return (
                                                             <>
                                                                 <Stack spacing={1} direction="row" alignItems="center" sx={{ mt: 2 }}>
