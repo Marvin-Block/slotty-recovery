@@ -234,7 +234,7 @@ export default function VerifiedMembers({ user }: any) {
                                                 <Typography component="span">Connections</Typography>
                                             </AccordionSummary>
                                             <AccordionDetails>
-                                                <Stack spacing={1} direction="column" alignItems="start" sx={{ mt: 2, height: '200px', overflowY: 'scroll' }}>
+                                                <Stack spacing={1} direction="column" alignItems="start" sx={{maxHeight: '300px', overflowY: 'scroll' }}>
                                                     {(userInfo.connections.map((connection:any) => {
                                                         return (
                                                             <TextSB2 key={connection.id}>{connection.type}{" -> "}{connection.name}</TextSB2>
@@ -258,7 +258,7 @@ export default function VerifiedMembers({ user }: any) {
                                                 <Typography component="span">Servers</Typography>
                                             </AccordionSummary>
                                             <AccordionDetails>
-                                                <Stack spacing={1} direction="column" alignItems="start" sx={{ mt: 2, height: '200px', overflowY: 'scroll' }}>
+                                                <Stack spacing={1} direction="column" alignItems="start" sx={{maxHeight: '300px', overflowY: 'scroll' }}>
                                                     {(userInfo.servers.map((server:any) => {
                                                         return (
                                                             <>
