@@ -1,42 +1,34 @@
 import { useRouter } from "next/router";
-import { useQuery } from "react-query";
-import { useToken } from "../../../src/token";
 import { useState } from "react";
+import { useQuery } from "react-query";
 import { AvatarFallback, IntlRelativeTime } from "../../../src/functions";
+import { useToken } from "../../../src/token";
 
 import NavBar from "../../../components/dashboard/navBar";
 import getUser from "../../../src/dashboard/getUser";
 import ErrorPage from "../../_error";
 
+import CloseIcon from "@mui/icons-material/Close";
+import Alert from "@mui/lab/Alert";
 import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import CardContent from "@mui/material/CardContent";
+import CircularProgress from "@mui/material/CircularProgress";
+import Container from "@mui/material/Container";
+import Dialog from "@mui/material/Dialog";
+import DialogContent from "@mui/material/DialogContent";
+import DialogTitle from "@mui/material/DialogTitle";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import IconButton from "@mui/material/IconButton";
+import Link from "@mui/material/Link";
+import Paper from "@mui/material/Paper";
+import Stack from "@mui/material/Stack";
+import Switch from "@mui/material/Switch";
+import TextField from "@mui/material/TextField";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
-import Container from "@mui/material/Container";
-import Paper from "@mui/material/Paper";
-import CardContent from "@mui/material/CardContent";
-import Button from "@mui/material/Button";
-import Stack from "@mui/material/Stack";
-import TextField from "@mui/material/TextField";
 import axios from "axios";
-import Alert from "@mui/lab/Alert";
-import CircularProgress from "@mui/material/CircularProgress";
 import theme from "../../../src/theme";
-import Dialog from "@mui/material/Dialog";
-import DialogTitle from "@mui/material/DialogTitle";
-import DialogContent from "@mui/material/DialogContent";
-import IconButton from "@mui/material/IconButton";
-import CloseIcon from "@mui/icons-material/Close";
-import Select from "@mui/material/Select";
-import MenuItem from "@mui/material/MenuItem";
-import InputLabel from "@mui/material/InputLabel";
-import FormControl from "@mui/material/FormControl";
-import OutlinedInput from "@mui/material/OutlinedInput";
-import FormLabel from "@mui/material/FormLabel";
-import Slider from "@mui/material/Slider";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Switch from "@mui/material/Switch";
-import Link from "@mui/material/Link";
-import { Avatar } from "@mui/material";
 
 export default function AdminMember() {
     const router = useRouter();
@@ -133,7 +125,7 @@ export default function AdminMember() {
                 setMembers({});
                 setErrorMessages("");
                 setSuccessMessage("");
-                await axios.post("/api/admin/members", { query: searchQuery }, {
+                await axios.post("/api/admin/lookup", { query: searchQuery }, {
                     headers: {
                         Authorization: (process.browser && window.localStorage.getItem("token")) ?? token,
                     },

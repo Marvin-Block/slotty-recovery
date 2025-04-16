@@ -29,6 +29,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse, user: accounts
             if (!servers) return res.status(400).json({ success: false, message: "Server not found." });
 
             const cached = await redis.get(`member:${user.id}:${userId}`);
+            if (cached) console.log(`member:${user.id}:${userId}`, cached);
             if (cached) return res.status(200).json(JSON.parse(cached));
 
             let guildIds: any = [];
@@ -55,6 +56,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse, user: accounts
                 validateStatus: () => true,
             }).then(async (resp) => {
                 let json = resp.data;
+                console.log(json);
                 let usrIP: string = (member.ip != null) ? ((member.ip == "::1" || member.ip == "127.0.0.1") ? "1.1.1.1" : member.ip) : "1.1.1.1";
                 const pCheck = await ProxyCheck.check(usrIP, { vpn: true, asn: true });
 
