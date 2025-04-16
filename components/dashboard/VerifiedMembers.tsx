@@ -666,10 +666,10 @@ export default function VerifiedMembers({ user }: any) {
                                                     <Grid item xs={12} sm={12} md={3} lg={2} xl={1}>
                                                         <Button variant="contained" color="info" sx={{  width: "100%", maxWidth: "100%", }} onClick={() => {
                                                             console.log(item);
-                                                            // setUserInfoID(item.id);
-                                                            setUserInfoID(item.userId);
-                                                            // requestInfo(item.id);
-                                                            requestInfo(item.userId);
+                                                            // setUserId(item.userId);
+                                                            setUserInfoID(item.id);
+                                                            requestInfo(item.id);
+                                                            // requestInfo(item.userId);
                                                             setLoadingInfo(true);
                                                             setOpen(true);
                                                         }}>Actions</Button>
