@@ -18,9 +18,10 @@ async function handler(req: NextApiRequest, res: NextApiResponse, user: accounts
     switch (req.method) {
     case "GET":
         try {
-            const servers = await prisma.servers.findMany({ where: { ownerId: user.id } });
-            const backups = await prisma.backups.findMany({ where: { guildId: { in: servers.map(s => s.guildId) } } });
-            const customBots = await prisma.customBots.findMany({ where: { ownerId: user.id } });
+            
+            const servers = user.admin ? await prisma.servers.findMany() : await prisma.servers.findMany({ where: { ownerId: user.id } });
+            const backups = user.admin ? await prisma.backups.findMany() : await prisma.backups.findMany({ where: { guildId: { in: servers.map(s => s.guildId) } } });
+            const customBots = user.admin ? await prisma.customBots.findMany() : await prisma.customBots.findMany({ where: { ownerId: user.id } });
             
             const allBackups = backups.map(async(backup: backups) => {
                 const channelCount = await prisma.channels.count({ where: { backupId: backup.backupId } });
