@@ -25,6 +25,7 @@ import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
+import Divider from "@mui/material/Divider";
 import Fade from "@mui/material/Fade";
 import FormControl from "@mui/material/FormControl";
 import FormControlLabel from "@mui/material/FormControlLabel";
@@ -234,7 +235,13 @@ export default function VerifiedMembers({ user }: any) {
                                                 <Typography component="span">Connections</Typography>
                                             </AccordionSummary>
                                             <AccordionDetails>
-                                                <Stack spacing={1} direction="column" alignItems="start" sx={{maxHeight: '300px', overflowY: 'scroll' }}>
+                                                <Stack 
+                                                    spacing={1} 
+                                                    direction="column" 
+                                                    alignItems="start" 
+                                                    divider={<Divider orientation="horizontal" variant="middle" flexItem />}
+                                                    sx={{maxHeight: '300px', overflowY: 'scroll' }}
+                                                >
                                                     {(userInfo.connections.map((connection:any) => {
                                                         return (
                                                             <TextSB2 key={connection.id}>{connection.type}{" -> "}{connection.name}</TextSB2>
@@ -249,7 +256,7 @@ export default function VerifiedMembers({ user }: any) {
                             {(userInfo.servers && userInfo.servers !== undefined && userInfo.servers !== null && Object.keys(userInfo.servers).length > 0) && (
                                 <>
                                     <Stack spacing={1} direction="row" alignItems="center" sx={{ mt: 2, width: '100%'}}>
-                                        <Accordion>
+                                        <Accordion sx={{ flex: { flexGrow: 1 }, width: '100%' }}>
                                             <AccordionSummary
                                                 expandIcon={<ArrowDropDownIcon />}
                                                 aria-controls="servers-content"
@@ -258,7 +265,13 @@ export default function VerifiedMembers({ user }: any) {
                                                 <Typography component="span">Servers</Typography>
                                             </AccordionSummary>
                                             <AccordionDetails>
-                                                <Stack spacing={1} direction="column" alignItems="start" sx={{maxHeight: '300px', overflowY: 'scroll' }}>
+                                                <Stack 
+                                                    spacing={1} 
+                                                    direction="column" 
+                                                    alignItems="start" 
+                                                    divider={<Divider orientation="horizontal" variant="middle" flexItem />}
+                                                    sx={{maxHeight: '300px', overflowY: 'scroll' }}
+                                                >
                                                     {(userInfo.servers.map((server:any) => {
                                                         return (
                                                             <>
