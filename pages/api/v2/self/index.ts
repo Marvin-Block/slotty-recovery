@@ -83,15 +83,18 @@ async function handler(req: NextApiRequest, res: NextApiResponse, user: accounts
                     importing: server.importing,
                 })),
                 backups: await Promise.all(allBackups),
-                bots: customBots.map((bot: customBots) => ({
-                    id: bot.id,
-                    name: bot.name,
-                    clientId: bot.clientId.toString(),
-                    botToken: bot.botToken,
-                    publicKey: bot.publicKey,
-                    botSecret: bot.botSecret,
-                    customDomain: bot.customDomain ? bot.customDomain : null,
-                })),
+                bots: customBots.map((bot: customBots) => {
+                    if(bot === undefined || bot === null) return null;
+                    return {
+                        id: bot.id,
+                        name: bot.name,
+                        clientId: bot.clientId.toString(),
+                        botToken: bot.botToken,
+                        publicKey: bot.publicKey,
+                        botSecret: bot.botSecret,
+                        customDomain: bot.customDomain ? bot.customDomain : null,
+                    }
+                }),
             };
 
             return res.status(200).json(response);
