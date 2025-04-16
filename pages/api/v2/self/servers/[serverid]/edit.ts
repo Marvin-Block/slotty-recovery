@@ -45,7 +45,14 @@ async function handler(req: NextApiRequest, res: NextApiResponse, user: accounts
             }
         }
 
-        const server = await prisma.servers.findFirst({
+        const server = user.admin ? await prisma.servers.findFirst({
+            include: {
+                customBot: true,
+            },
+            where: {
+                guildId: BigInt(req.query.serverid as string),
+            },
+        }) : await prisma.servers.findFirst({
             include: {
                 customBot: true,
             },
