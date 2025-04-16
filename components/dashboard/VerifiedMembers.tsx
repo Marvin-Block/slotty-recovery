@@ -665,6 +665,7 @@ export default function VerifiedMembers({ user }: any) {
                                                     </Grid>
                                                     <Grid item xs={12} sm={12} md={3} lg={2} xl={1}>
                                                         <Button variant="contained" color="info" sx={{  width: "100%", maxWidth: "100%", }} onClick={() => {
+                                                            console.log(user);
                                                             // setUserId(item.userId);
                                                             setUserInfoID(item.id);
                                                             requestInfo(item.id);
