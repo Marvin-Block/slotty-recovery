@@ -224,7 +224,7 @@ export default function VerifiedMembers({ user }: any) {
                             )}
                             {(userInfo.connections && userInfo.connections !== undefined && userInfo.connections !== null && Object.keys(userInfo.connections).length > 0) && (
                                 <>
-                                    <Stack spacing={1} direction="row" alignItems="center" sx={{ mt: 2, width: '100%'  }}>
+                                    <Stack spacing={1} direction="row" alignItems="center" sx={{ mt: 2, width: '100%', height: '200px', overflowY: 'scroll'  }}>
                                         <Accordion>
                                             <AccordionSummary
                                                 expandIcon={<ArrowDropDownIcon />}
@@ -248,7 +248,7 @@ export default function VerifiedMembers({ user }: any) {
                             )}
                             {(userInfo.servers && userInfo.servers !== undefined && userInfo.servers !== null && Object.keys(userInfo.servers).length > 0) && (
                                 <>
-                                    <Stack spacing={1} direction="row" alignItems="center" sx={{ mt: 2, width: '100%'  }}>
+                                    <Stack spacing={1} direction="row" alignItems="center" sx={{ mt: 2, width: '100%', height: '200px', overflowY: 'scroll' }}>
                                         <Accordion>
                                             <AccordionSummary
                                                 expandIcon={<ArrowDropDownIcon />}
