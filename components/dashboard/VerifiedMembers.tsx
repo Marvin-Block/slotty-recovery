@@ -108,9 +108,9 @@ export default function VerifiedMembers({ user }: any) {
 
     const columns: GridColDef[] = [
         { field: 'id', headerName: 'ID', width: 70 },
-        { field: 'guildId', headerName: 'Guild ID', width: 130 },
-        { field: 'name', headerName: 'Server Name', width: 130 },
-        { field: 'permissions', headerName: 'Permissions', type: 'number', width: 130 },
+        { field: 'guildId', headerName: 'Guild ID', width: 210 },
+        { field: 'name', headerName: 'Server Name', width: 210 },
+        { field: 'permissions', headerName: 'Permissions', type: 'number', width: 210 },
         { field: 'isOwner', headerName: 'Is Owner ?', type: 'boolean', width: 90 },
         {
             field: 'serverCreation',
@@ -121,21 +121,6 @@ export default function VerifiedMembers({ user }: any) {
             valueGetter: (params: GridValueGetterParams) => `${makeDateString(params.row.serverCreation)}`,
         },
     ];
-      
-    // const rows = [
-    //     { id: 1, lastName: 'Snow', firstName: 'Jon', age: 35 },
-    //     { id: 2, lastName: 'Lannister', firstName: 'Cersei', age: 42 },
-    //     { id: 3, lastName: 'Lannister', firstName: 'Jaime', age: 45 },
-    //     { id: 4, lastName: 'Stark', firstName: 'Arya', age: 16 },
-    //     { id: 5, lastName: 'Targaryen', firstName: 'Daenerys', age: null },
-    //     { id: 6, lastName: 'Melisandre', firstName: null, age: 150 },
-    //     { id: 7, lastName: 'Clifford', firstName: 'Ferrara', age: 44 },
-    //     { id: 8, lastName: 'Frances', firstName: 'Rossini', age: 36 },
-    //     { id: 9, lastName: 'Roxie', firstName: 'Harvey', age: 65 },
-    // ];
-      
-    const paginationModel = { page: 0, pageSize: 5 };
-      
 
     function handleSelect(event: SelectChangeEvent) {
         setServerId(event.target.value as string);
@@ -295,45 +280,6 @@ export default function VerifiedMembers({ user }: any) {
                                                     {(userInfo.connections.map((connection:any) => {
                                                         return (
                                                             <TextSB2 key={connection.id}>{connection.type}{" -> "}{connection.name}</TextSB2>
-                                                        )
-                                                    }))}
-                                                </Stack>
-                                            </AccordionDetails>
-                                        </Accordion>
-                                    </Stack>
-                                </>
-                            )}
-                            {(userInfo.servers && userInfo.servers !== undefined && userInfo.servers !== null && Object.keys(userInfo.servers).length > 0) && (
-                                <>
-                                    <Stack spacing={1} direction="row" alignItems="center" sx={{ mt: 2, width: '100%'}}>
-                                        <Accordion sx={{ flex: { flexGrow: 1 }, width: '100%' }}>
-                                            <AccordionSummary
-                                                expandIcon={<ArrowDropDownIcon />}
-                                                aria-controls="servers-content"
-                                                id="servers-header"
-                                            >
-                                                <Typography component="span">Servers</Typography>
-                                            </AccordionSummary>
-                                            <AccordionDetails>
-                                                <Stack 
-                                                    spacing={1} 
-                                                    direction="column" 
-                                                    alignItems="start" 
-                                                    divider={<Divider orientation="horizontal" variant="middle" flexItem />}
-                                                    sx={{maxHeight: '300px', overflowY: 'scroll' }}
-                                                >
-                                                    {(userInfo.servers.sort((e1:any, e2:any) => e1.name.localeCompare(e2.name)).map((server:any) => {
-                                                        return (
-                                                            <>
-                                                                <Stack spacing={1} direction="row" alignItems="center" sx={{ mt: 2 }}>
-                                                                    <Avatar alt="Icon" key={server.id} src={"https://cdn.discordapp.com/icons/" + server.guildId + "/" + server.icon + ".webp?size=512"}/>
-                                                                    <TextSB2><b>{server.name}</b></TextSB2>
-                                                                </Stack>
-                                                                <TextSB2>ID: <b>{server.guildId}</b></TextSB2>
-                                                                <TextSB2>Owner: <b>{server.isOwner ? "Yes" : "No"}</b></TextSB2>
-                                                                <TextSB2>Created At: <b>{makeDateString(server.serverCreation)}</b></TextSB2>
-                                                                <TextSB2>Permissions: <b>{server.permissions}</b></TextSB2>
-                                                            </>
                                                         )
                                                     }))}
                                                 </Stack>
