@@ -210,7 +210,7 @@ export default function VerifiedMembers({ user }: any) {
                         </IconButton>
                     </Stack>
                 </DialogTitle>
-                <DialogContent sx={{ marginTop: 2 }}>
+                <DialogContent>
                     {(!loadingInfo && userInfo) ? (
                         <>
                             <Stack spacing={1} direction="row" alignItems="center" sx={{ borderRadius: "1rem", flexDirection: { xs: "column", md: "row" } }}>
