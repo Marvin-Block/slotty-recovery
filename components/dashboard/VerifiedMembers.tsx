@@ -202,8 +202,8 @@ export default function VerifiedMembers({ user }: any) {
                 <DataGrid
                     rows={data}
                     columns={columns}
-                    pageSize={5}
-                    rowsPerPageOptions={[5]}
+                    pageSize={20}
+                    rowsPerPageOptions={[20]}
                     checkboxSelection
                     disableSelectionOnClick
                     experimentalFeatures={{ newEditingApi: true }}
@@ -214,7 +214,7 @@ export default function VerifiedMembers({ user }: any) {
 
     function renderMoreInfo() {
         return (
-            <Dialog open={open} onClose={() => { setOpen(false); setUserInfo({}); setLoadingInfo(true); } } maxWidth="sm" fullWidth sx={{ borderRadius: "50%" }}>
+            <Dialog open={open} onClose={() => { setOpen(false); setUserInfo({}); setLoadingInfo(true); } } maxWidth="lg" fullWidth sx={{ borderRadius: "50%" }}>
                 <DialogTitle sx={{ backgroundColor: "grey.900" }}>
                     <Stack spacing={1} direction="row" alignItems="center" justifyContent="space-between">
                         <Typography variant="h5" sx={{ fontWeight: "500" }}>
