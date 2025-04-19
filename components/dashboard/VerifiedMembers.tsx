@@ -42,7 +42,8 @@ import Stack from "@mui/material/Stack";
 import TextField from "@mui/material/TextField";
 import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import { DataGrid, GridColDef, GridValueGetterParams } from '@mui/x-data-grid';
+
 import Link from "next/link";
 import getMembers, { BUG_HUNTER_LEVEL_1, CERTIFIED_MODERATOR, DISCORD_EMPLOYEE, DISCORD_PARTNER, EARLY_SUPPORTER, HOUSE_BALANCE, HOUSE_BRAVERY, HOUSE_BRILLIANCE, HYPESQUAD_EVENTS, VERIFIED_BOT_DEVELOPER } from "../../src/dashboard/getMembers";
 import { AvatarFallback } from "../../src/functions";
@@ -117,7 +118,7 @@ export default function VerifiedMembers({ user }: any) {
             description: 'This column has a value getter and is not sortable.',
             sortable: false,
             width: 160,
-            valueGetter: (value:any, row:any) => `${makeDateString(row.serverCreation)}`,
+            valueGetter: (params: GridValueGetterParams) => `${makeDateString(params.row.serverCreation)}`,
         },
     ];
       
@@ -201,10 +202,11 @@ export default function VerifiedMembers({ user }: any) {
                 <DataGrid
                     rows={data}
                     columns={columns}
-                    initialState={{ pagination: { paginationModel } }}
-                    pageSizeOptions={[5, 10]}
+                    pageSize={5}
+                    rowsPerPageOptions={[5]}
                     checkboxSelection
-                    sx={{ border: 0 }}
+                    disableSelectionOnClick
+                    experimentalFeatures={{ newEditingApi: true }}
                 />
             </Paper>
         );
