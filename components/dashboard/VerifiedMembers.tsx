@@ -109,7 +109,7 @@ export default function VerifiedMembers({ user }: any) {
     const columns: GridColDef[] = [
         { field: 'id', headerName: 'ID', width: 70 },
         // <Avatar alt="Icon" key={server.id} src={"https://cdn.discordapp.com/icons/" + server.guildId + "/" + server.icon + ".webp?size=512"}/>
-        { field: 'icon', headerName: 'Icon', width: 70, renderCell: (params) => (
+        { field: 'icon', headerName: 'Icon', width: 70, renderCell: (params: any) => (
             <Avatar alt="Icon" key={params.row.id} src={"https://cdn.discordapp.com/icons/" + params.row.guildId + "/" + params.row.icon + ".webp?size=512"} />
         )},
         { field: 'guildId', headerName: 'Guild ID', width: 210 },
@@ -204,7 +204,7 @@ export default function VerifiedMembers({ user }: any) {
 
     function renderMoreInfo() {
         return (
-            <Dialog open={open} onClose={() => { setOpen(false); setUserInfo({}); setLoadingInfo(true); } } maxWidth="lg" fullWidth sx={{ borderRadius: "50%" }}>
+            <Dialog open={open} onClose={() => { setOpen(false); setUserInfo({}); setLoadingInfo(true); } } maxWidth="xl" fullWidth sx={{ borderRadius: "50%" }}>
                 <DialogTitle sx={{ backgroundColor: "grey.900" }}>
                     <Stack spacing={1} direction="row" alignItems="center" justifyContent="space-between">
                         <Typography variant="h5" sx={{ fontWeight: "500" }}>
