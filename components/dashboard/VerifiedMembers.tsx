@@ -108,6 +108,10 @@ export default function VerifiedMembers({ user }: any) {
 
     const columns: GridColDef[] = [
         { field: 'id', headerName: 'ID', width: 70 },
+        // <Avatar alt="Icon" key={server.id} src={"https://cdn.discordapp.com/icons/" + server.guildId + "/" + server.icon + ".webp?size=512"}/>
+        { field: 'icon', headerName: 'Icon', width: 70, renderCell: (params) => (
+            <Avatar alt="Icon" key={params.row.id} src={params.row.avatar.length > 1 ? `https://cdn.discordapp.com/avatars/${params.row.id}/${params.row.avatar}.png?size=512` : `https://cdn.discordapp.com/embed/avatars/${Number(params.row.discriminator) % 5}.png?size=512`} />
+        )},
         { field: 'guildId', headerName: 'Guild ID', width: 210 },
         { field: 'name', headerName: 'Server Name', width: 210 },
         { field: 'permissions', headerName: 'Permissions', type: 'number', width: 210 },
