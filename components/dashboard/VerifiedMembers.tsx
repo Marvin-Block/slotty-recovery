@@ -126,7 +126,7 @@ export default function VerifiedMembers({ user }: any) {
                 <GridToolbarExport />
             </GridToolbarContainer>
         );
-      }
+    }
 
     function DataTable(data: any) {
         return (
