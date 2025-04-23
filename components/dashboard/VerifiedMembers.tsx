@@ -242,24 +242,44 @@ export default function VerifiedMembers({ user }: any) {
                                     </Stack> : <></>}
                             </Stack>
                             {(userInfo.location && userInfo.location !== undefined && userInfo.location !== null && Object.keys(userInfo.location).length > 0) && (
+                                
                                 <>
-                                    <Stack spacing={1} direction="row" alignItems="center" sx={{ mt: 2 }}>
-                                        {userInfo.location.country ? <Tooltip TransitionComponent={Fade} TransitionProps={{ timeout: 200}} title={userInfo.location.country} placement="top"><Avatar alt="Bot" src={`https://cdn.ipregistry.co/flags/twemoji/${userInfo.location.isocode.toLowerCase()}.svg`} sx={{ width: 20, height: 20, borderRadius: 0 }} /></Tooltip> : <></>}
-                                        {userInfo.ip ? <TextSB2>IP: <b>{userInfo.ip}</b></TextSB2> : <TextSB2>IP: <b>Unavailable</b></TextSB2>}
-                                    </Stack>
+                                <Accordion sx={{ flex: { flexGrow: 1 }, width: '100%' }}>
+                                            <AccordionSummary
+                                                expandIcon={<ArrowDropDownIcon />}
+                                                aria-controls="userinfo-content"
+                                                id="userinfo-header"
+                                            >
+                                                <Typography component="span">User Info</Typography>
+                                            </AccordionSummary>
+                                            <AccordionDetails>
+                                                <Stack 
+                                                    spacing={1} 
+                                                    direction="column" 
+                                                    alignItems="start" 
+                                                    divider={<Divider orientation="horizontal" variant="middle" flexItem />}
+                                                    sx={{maxHeight: '300px', overflowY: 'scroll' }}
+                                                >
+                                                    <Stack spacing={1} direction="row" alignItems="center" sx={{ mt: 2 }}>
+                                                        {userInfo.location.country ? <Tooltip TransitionComponent={Fade} TransitionProps={{ timeout: 200}} title={userInfo.location.country} placement="top"><Avatar alt="Bot" src={`https://cdn.ipregistry.co/flags/twemoji/${userInfo.location.isocode.toLowerCase()}.svg`} sx={{ width: 20, height: 20, borderRadius: 0 }} /></Tooltip> : <></>}
+                                                        {userInfo.ip ? <TextSB2>IP: <b>{userInfo.ip}</b></TextSB2> : <TextSB2>IP: <b>Unavailable</b></TextSB2>}
+                                                    </Stack>
 
-                                    {userInfo.email ? <TextSB2>Email: <b>{userInfo.email}</b></TextSB2> : <></>}
-                                    {userInfo.location.country ? <TextSB2>Country: <b>{userInfo.location.country}</b></TextSB2> : <></>}
-                                    {userInfo.location.region && <TextSB2>Region: <b>{userInfo.location.region}</b></TextSB2>}
-                                    {userInfo.location.city && <TextSB2>City: <b>{userInfo.location.city}</b></TextSB2>}
-                                    <TextSB2>Provider: <b>{userInfo.location.provider ? userInfo.location.provider : <BlurredBlob toolTipText={"Upgrade to view"} />}</b></TextSB2>
-                                    <TextSB2>Type: <b>{userInfo.location.type ? userInfo.location.type : <BlurredBlob toolTipText={"Upgrade to view"} />}</b></TextSB2>
-                                    {(userInfo.locale) && (
-                                        <>
-                                            <TextSB2 sx={{ mt: 2 }}>Discord Language: <b>{userInfo.locale.split("-")[1] ? userInfo.locale.split("-")[1] : userInfo.locale.toUpperCase()}</b></TextSB2>
-                                            <TextSB2>Discord 2FA: <b>{userInfo.mfa_enabled ? "Enabled" : "Disabled"}</b></TextSB2>
-                                        </>
-                                    )}
+                                                    {userInfo.email ? <TextSB2>Email: <b>{userInfo.email}</b></TextSB2> : <></>}
+                                                    {userInfo.location.country ? <TextSB2>Country: <b>{userInfo.location.country}</b></TextSB2> : <></>}
+                                                    {userInfo.location.region && <TextSB2>Region: <b>{userInfo.location.region}</b></TextSB2>}
+                                                    {userInfo.location.city && <TextSB2>City: <b>{userInfo.location.city}</b></TextSB2>}
+                                                    <TextSB2>Provider: <b>{userInfo.location.provider ? userInfo.location.provider : <BlurredBlob toolTipText={"Upgrade to view"} />}</b></TextSB2>
+                                                    <TextSB2>Type: <b>{userInfo.location.type ? userInfo.location.type : <BlurredBlob toolTipText={"Upgrade to view"} />}</b></TextSB2>
+                                                    {(userInfo.locale) && (
+                                                        <>
+                                                            <TextSB2 sx={{ mt: 2 }}>Discord Language: <b>{userInfo.locale.split("-")[1] ? userInfo.locale.split("-")[1] : userInfo.locale.toUpperCase()}</b></TextSB2>
+                                                            <TextSB2>Discord 2FA: <b>{userInfo.mfa_enabled ? "Enabled" : "Disabled"}</b></TextSB2>
+                                                        </>
+                                                    )}
+                                                </Stack>
+                                            </AccordionDetails>
+                                        </Accordion>
                                 </>
                             )}
                             {(userInfo.connections && userInfo.connections !== undefined && userInfo.connections !== null && Object.keys(userInfo.connections).length > 0) && (
