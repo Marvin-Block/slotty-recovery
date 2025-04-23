@@ -119,12 +119,12 @@ export default function VerifiedMembers({ user }: any) {
 
     function CustomToolbar() {
         return (
-          <GridToolbarContainer>
-            <GridToolbarColumnsButton nonce={undefined} onResize={undefined} onResizeCapture={undefined} />
-            <GridToolbarFilterButton nonce={undefined} onResize={undefined} onResizeCapture={undefined} />
-            <GridToolbarDensitySelector nonce={undefined} onResize={undefined} onResizeCapture={undefined} />
-            <GridToolbarExport />
-          </GridToolbarContainer>
+            <GridToolbarContainer>
+                <GridToolbarColumnsButton nonce={undefined} onResize={undefined} onResizeCapture={undefined} />
+                <GridToolbarFilterButton nonce={undefined} onResize={undefined} onResizeCapture={undefined} />
+                <GridToolbarDensitySelector nonce={undefined} onResize={undefined} onResizeCapture={undefined} />
+                <GridToolbarExport />
+            </GridToolbarContainer>
         );
       }
 
