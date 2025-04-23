@@ -194,7 +194,6 @@ export default function VerifiedMembers({ user }: any) {
                     columns={columns}
                     pageSize={20}
                     rowsPerPageOptions={[20]}
-                    checkboxSelection
                     disableSelectionOnClick
                     experimentalFeatures={{ newEditingApi: true }}
                 />
