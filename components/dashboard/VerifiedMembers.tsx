@@ -203,7 +203,7 @@ export default function VerifiedMembers({ user }: any) {
 
     function renderMoreInfo() {
         return (
-            <Dialog open={open} onClose={() => { setOpen(false); setUserInfo({}); setLoadingInfo(true); } } maxWidth="xl" fullWidth sx={{ borderRadius: "50%" }}>
+            <Dialog open={open} onClose={() => { setOpen(false); setUserInfo({}); setLoadingInfo(true); } } fullScreen sx={{ borderRadius: "50%" }}>
                 <DialogTitle sx={{ backgroundColor: "grey.900" }}>
                     <Stack spacing={1} direction="row" alignItems="center" justifyContent="space-between">
                         <Typography variant="h5" sx={{ fontWeight: "500" }}>
