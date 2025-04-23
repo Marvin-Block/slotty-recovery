@@ -107,25 +107,34 @@ export default function VerifiedMembers({ user }: any) {
     });
 
     const columns: GridColDef[] = [
-        // { field: 'id', headerName: 'ID', width: 70 },
-        // <Avatar alt="Icon" key={server.id} src={"https://cdn.discordapp.com/icons/" + server.guildId + "/" + server.icon + ".webp?size=512"}/>
-        { field: 'icon', headerName: 'Icon', width: 70, renderCell: (params: any) => (
+        { field: 'icon', headerName: 'Icon', sortable: false, width: 70, renderCell: (params: any) => (
             <Avatar alt="Icon" key={params.row.id} src={"https://cdn.discordapp.com/icons/" + params.row.guildId + "/" + params.row.icon + ".webp?size=512"} />
         )},
         { field: 'guildId', headerName: 'Guild ID', width: 210 },
-        { field: 'name', headerName: 'Server Name', width: 210 },
+        { field: 'name', headerName: 'Server Name', width: 340 },
         { field: 'permissions', headerName: 'Permissions', type: 'number', width: 210 },
         { field: 'isOwner', headerName: 'Is Owner ?', type: 'boolean', width: 120 },
-        {
-            field: 'serverCreation',
-            headerName: 'Created At',
-            // description: 'This column has a value getter and is not sortable.',
-            // sortable: false,
-            width: 160,
-            type: 'dateTime',
-            // valueGetter: (params: GridValueGetterParams) => `${makeDateString(params.row.serverCreation)}`,
-        },
+        { field: 'serverCreation', headerName: 'Created At', width: 160, type: 'dateTime' },
     ];
+
+    function DataTable(data: any) {
+        return (
+            <Paper sx={{ height: 500, width: '100%' }}>
+                <DataGrid
+                    rows={data}
+                    columns={columns}
+                    // pageSize={25}
+                    rowsPerPageOptions={[25, 50, 100]}
+                    disableSelectionOnClick
+                    checkboxSelection
+                    experimentalFeatures={{ newEditingApi: true }}
+                    components={{
+                        Toolbar: GridToolbar,
+                    }}                    
+                />
+            </Paper>
+        );
+    }
 
     function handleSelect(event: SelectChangeEvent) {
         setServerId(event.target.value as string);
@@ -180,29 +189,6 @@ export default function VerifiedMembers({ user }: any) {
             clearTimeout(delayDebounceFn);
         }       
     }, [hasNextPage, fetchNextPage, refetch, search]);
-
-    function makeDateString(date: any) {
-        const d = new Date(date);
-        return d.toLocaleDateString("en-GB");
-    }
-
-    function DataTable(data: any) {
-        return (
-            <Paper sx={{ height: 500, width: '100%' }}>
-                <DataGrid
-                    rows={data}
-                    columns={columns}
-                    pageSize={20}
-                    rowsPerPageOptions={[20]}
-                    disableSelectionOnClick
-                    experimentalFeatures={{ newEditingApi: true }}
-                    components={{
-                        Toolbar: GridToolbar,
-                    }}                    
-                />
-            </Paper>
-        );
-    }
 
     function renderMoreInfo() {
         return (
