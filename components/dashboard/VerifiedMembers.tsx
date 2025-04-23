@@ -198,7 +198,7 @@ export default function VerifiedMembers({ user }: any) {
                     experimentalFeatures={{ newEditingApi: true }}
                     components={{
                         Toolbar: GridToolbar,
-                      }}                    
+                    }}                    
                 />
             </Paper>
         );
