@@ -124,6 +124,9 @@ export default function VerifiedMembers({ user }: any) {
                 <GridToolbarFilterButton nonce={undefined} onResize={undefined} onResizeCapture={undefined} />
                 <GridToolbarDensitySelector nonce={undefined} onResize={undefined} onResizeCapture={undefined} />
                 <GridToolbarExport />
+                <Button variant="contained" color="error" sx={{  width: "100%", maxWidth: "100%", }} onClick={() => {
+                console.log("clicked");
+                }}>Blacklist</Button>
             </GridToolbarContainer>
         );
     }
