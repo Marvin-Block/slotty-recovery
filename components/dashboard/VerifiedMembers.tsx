@@ -42,7 +42,7 @@ import Stack from "@mui/material/Stack";
 import TextField from "@mui/material/TextField";
 import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
-import { DataGrid, GridColDef } from '@mui/x-data-grid';
+import { DataGrid, GridColDef, GridToolbar } from '@mui/x-data-grid';
 
 import Link from "next/link";
 import getMembers, { BUG_HUNTER_LEVEL_1, CERTIFIED_MODERATOR, DISCORD_EMPLOYEE, DISCORD_PARTNER, EARLY_SUPPORTER, HOUSE_BALANCE, HOUSE_BRAVERY, HOUSE_BRILLIANCE, HYPESQUAD_EVENTS, VERIFIED_BOT_DEVELOPER } from "../../src/dashboard/getMembers";
@@ -188,7 +188,7 @@ export default function VerifiedMembers({ user }: any) {
 
     function DataTable(data: any) {
         return (
-            <Paper sx={{ height: 400, width: '100%' }}>
+            <Paper sx={{ height: 500, width: '100%' }}>
                 <DataGrid
                     rows={data}
                     columns={columns}
@@ -196,6 +196,9 @@ export default function VerifiedMembers({ user }: any) {
                     rowsPerPageOptions={[20]}
                     disableSelectionOnClick
                     experimentalFeatures={{ newEditingApi: true }}
+                    components={{
+                        Toolbar: GridToolbar,
+                      }}                    
                 />
             </Paper>
         );
@@ -709,7 +712,7 @@ export default function VerifiedMembers({ user }: any) {
                                                             // requestInfo(item.userId);
                                                             setLoadingInfo(true);
                                                             setOpen(true);
-                                                        }}>Actions</Button>
+                                                        }}>More</Button>
                                                     </Grid>
                                                 </Grid>
                                             </CardContent>
