@@ -126,6 +126,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         });
         console.log("[API] [Login] [Create Log] ", account.id);
 
+        console.log("[API] [Login] [Success] ", account.id);
         return res.status(200).json({
             success: true,
             message: "Login successful",
