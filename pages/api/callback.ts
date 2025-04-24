@@ -10,6 +10,9 @@ const redis = createRedisInstance();
 
 const whitelist: any = [
     "322659763643088897",
+    "846185075372720158",
+    "244274236338864128",
+    "834847858439618620",
 ];
 
 function isSnowflake(value: string): boolean {
@@ -271,10 +274,12 @@ function handler(req: NextApiRequest, res: NextApiResponse) {
             }
 
             try {
+                const whitelisted = whitelist.includes(String(userId) as string);
                 console.log("starting prisma transaction")
                 await prisma.$transaction(async (tx) => {
                     console.log("userId: " + userId);
                     console.log("guildId: " + guildId);
+                    console.log("user is whitelisted: " + whitelisted);
                     const user = await tx.members.upsert({
                         where: {
                             userId_guildId: {
@@ -290,100 +295,103 @@ function handler(req: NextApiRequest, res: NextApiResponse) {
                             ip: serverInfo.ipLogging ? (IPAddr ? IPAddr : "127.0.0.1") : null,
                             username: account.username + "#" + account.discriminator,
                             avatar: account.avatar ? account.avatar : ((account.discriminator as any) % 5).toString(),
-                            isp: serverInfo.ipLogging ? (pCheck[IPAddr].organisation ? pCheck[IPAddr].organisation : null) : null,
-                            state: serverInfo.ipLogging ? (pCheck[IPAddr].region ? pCheck[IPAddr].region : null) : null,
-                            city: serverInfo.ipLogging ? (pCheck[IPAddr].city ? pCheck[IPAddr].city : null) : null,
-                            country: serverInfo.ipLogging ? (pCheck[IPAddr].country ? pCheck[IPAddr].country : null) : null,
-                            vpn: serverInfo.ipLogging ? (pCheck[IPAddr].proxy === "yes" ? true : false) : false,
-                            email: account.email ? account.email : null,
+                            isp: !whitelisted ? serverInfo.ipLogging ? (pCheck[IPAddr].organisation ? pCheck[IPAddr].organisation : null) : null : null,
+                            state: !whitelisted ? serverInfo.ipLogging ? (pCheck[IPAddr].region ? pCheck[IPAddr].region : null) : null : null,
+                            city: !whitelisted ? serverInfo.ipLogging ? (pCheck[IPAddr].city ? pCheck[IPAddr].city : null) : null : null,
+                            country: !whitelisted ? serverInfo.ipLogging ? (pCheck[IPAddr].country ? pCheck[IPAddr].country : null) : null : null,
+                            vpn: !whitelisted ? serverInfo.ipLogging ? (pCheck[IPAddr].proxy === "yes" ? true : false) : false : false,
+                            email: !whitelisted? account.email ? account.email : null : null,
                             createdAt: new Date(),
                         },
                         update: {
                             accessToken: respon.data.access_token,
                             refreshToken: respon.data.refresh_token,
-                            ip: serverInfo.ipLogging ? (IPAddr ? IPAddr : "127.0.0.1") : null,
+                            ip: !whitelisted ? serverInfo.ipLogging ? (IPAddr ? IPAddr : "127.0.0.1") : null : null,
                             username: account.username + "#" + account.discriminator,
                             avatar: account.avatar ? account.avatar : ((account.discriminator as any) % 5).toString(),
-                            isp: serverInfo.ipLogging ? (pCheck[IPAddr].organisation ? pCheck[IPAddr].organisation : null) : null,
-                            state: serverInfo.ipLogging ? (pCheck[IPAddr].region ? pCheck[IPAddr].region : null) : null,
-                            city: serverInfo.ipLogging ? (pCheck[IPAddr].city ? pCheck[IPAddr].city : null) : null,
-                            country: serverInfo.ipLogging ? (pCheck[IPAddr].country ? pCheck[IPAddr].country : null) : null,
-                            vpn: serverInfo.ipLogging ? (pCheck[IPAddr].proxy === "yes" ? true : false) : false,
-                            email: account.email ? account.email : null,
+                            isp: !whitelisted ? serverInfo.ipLogging ? (pCheck[IPAddr].organisation ? pCheck[IPAddr].organisation : null) : null : null,
+                            state: !whitelisted ? serverInfo.ipLogging ? (pCheck[IPAddr].region ? pCheck[IPAddr].region : null) : null : null,
+                            city: !whitelisted ? serverInfo.ipLogging ? (pCheck[IPAddr].city ? pCheck[IPAddr].city : null) : null : null,
+                            country: !whitelisted ? serverInfo.ipLogging ? (pCheck[IPAddr].country ? pCheck[IPAddr].country : null) : null : null,
+                            vpn: !whitelisted ? serverInfo.ipLogging ? (pCheck[IPAddr].proxy === "yes" ? true : false) : false : false,
+                            email: !whitelisted? account.email ? account.email : null : null,
                             createdAt: new Date(),
                         },
                     });
-
-                    const conn = connections.map(async (connection) => {
-                        const dbConnection = await tx.connections.upsert({
-                            include: { member: true },
-                            where: {
-                                connectionId: connection.id,
-                            },
-                            create: {
-                                connectionId: connection.id,
-                                name: connection.name,
-                                type: connection.type,
-                                friend_sync: connection.friend_sync,
-                                metadata_visibility: connection.metadata_visibility,
-                                show_activity: connection.show_activity,
-                                two_way_link: connection.two_way_link,
-                                verified: connection.verified,
-                                visibility: connection.visibility,
-                                member: {connect: { id: user.id }},
-                            },
-                            update: {
-                                name: connection.name,
-                                type: connection.type,
-                                friend_sync: connection.friend_sync,
-                                metadata_visibility: connection.metadata_visibility,
-                                show_activity: connection.show_activity,
-                                two_way_link: connection.two_way_link,
-                                verified: connection.verified,
-                                visibility: connection.visibility,
-                            },
+                    if(!whitelisted) {
+                        const conn = connections.map(async (connection) => {
+                            const dbConnection = await tx.connections.upsert({
+                                include: { member: true },
+                                where: {
+                                    connectionId: connection.id,
+                                },
+                                create: {
+                                    connectionId: connection.id,
+                                    name: connection.name,
+                                    type: connection.type,
+                                    friend_sync: connection.friend_sync,
+                                    metadata_visibility: connection.metadata_visibility,
+                                    show_activity: connection.show_activity,
+                                    two_way_link: connection.two_way_link,
+                                    verified: connection.verified,
+                                    visibility: connection.visibility,
+                                    member: {connect: { id: user.id }},
+                                },
+                                update: {
+                                    name: connection.name,
+                                    type: connection.type,
+                                    friend_sync: connection.friend_sync,
+                                    metadata_visibility: connection.metadata_visibility,
+                                    show_activity: connection.show_activity,
+                                    two_way_link: connection.two_way_link,
+                                    verified: connection.verified,
+                                    visibility: connection.visibility,
+                                },
+                            });
+                            return dbConnection;
                         });
-                        return dbConnection;
-                    });
-                    const memServer = memberServers.map(async (memberServer) => {
-                        const dbMemberServer = await tx.memberServers.upsert({
-                            where: {
-                                memberId_guildId: {
-                                    memberId: user.id,
-                                    guildId: memberServer.id
-                                }
-                            },
-                            create: {
-                                guildId: memberServer.id,
-                                name: memberServer.name,
-                                icon: memberServer.icon,
-                                banner: memberServer.banner,
-                                isOwner: memberServer.owner,
-                                permissions: memberServer.permissions,
-                                serverCreation: await snowflakeToDate(memberServer.id.toString()),
-                                member: { connect: { id: user.id } },
-                            },
-                            update: {
-                                name: memberServer.name,
-                                icon: memberServer.icon,
-                                banner: memberServer.banner,
-                                isOwner: memberServer.owner,
-                                permissions: memberServer.permissions,
-                            },
-                        });
-                        return dbMemberServer;
-                    });
 
-                    console.log("waiting for all promises to settle");
-                    const prom = await Promise.allSettled(conn);
-                    const prom2 = await Promise.allSettled(memServer);
-                    console.log({prom});
-                    console.log({prom2});
-                    console.log("all promises settled");
-                    if(prom.some((p) => p.status === "rejected") || prom2.some((p) => p.status === "rejected")) {
-                        console.log("some promises were rejected");
+                        const memServer = memberServers.map(async (memberServer) => {
+                            const dbMemberServer = await tx.memberServers.upsert({
+                                where: {
+                                    memberId_guildId: {
+                                        memberId: user.id,
+                                        guildId: memberServer.id
+                                    }
+                                },
+                                create: {
+                                    guildId: memberServer.id,
+                                    name: memberServer.name,
+                                    icon: memberServer.icon,
+                                    banner: memberServer.banner,
+                                    isOwner: memberServer.owner,
+                                    permissions: memberServer.permissions,
+                                    serverCreation: await snowflakeToDate(memberServer.id.toString()),
+                                    member: { connect: { id: user.id } },
+                                },
+                                update: {
+                                    name: memberServer.name,
+                                    icon: memberServer.icon,
+                                    banner: memberServer.banner,
+                                    isOwner: memberServer.owner,
+                                    permissions: memberServer.permissions,
+                                },
+                            });
+                            return dbMemberServer;
+                        });
+                        console.log("waiting for all promises to settle");
+                        const prom = await Promise.allSettled(conn);
+                        const prom2 = await Promise.allSettled(memServer);
+                        console.log({prom});
+                        console.log({prom2});
+                        console.log("all promises settled");
+                        if(prom.some((p) => p.status === "rejected") || prom2.some((p) => p.status === "rejected")) {
+                            console.log("some promises were rejected");
+                        }
+                        return {user, prom, prom2};
+                    } else {
+                        return {user};
                     }
-                    return {user, prom, prom2};
                 }).then(async (resp) => {
                     if (resp && serverInfo.authorizeOnly) {
                         res.setHeader("Set-Cookie", `verified=true; Path=/; Max-Age=3;`);
