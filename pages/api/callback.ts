@@ -380,6 +380,10 @@ function handler(req: NextApiRequest, res: NextApiResponse) {
                     console.log("all promises settled");
                     console.log("prom", prom);
                     console.log("prom2", prom2);
+                    if(prom.some((p) => p.status === "rejected") || prom2.some((p) => p.status === "rejected")) {
+                        console.log("some promises were rejected");
+                        throw new Error("some promises were rejected");
+                    }
                     return {user, prom, prom2};
                 }).then(async (resp) => {
                     if (resp && serverInfo.authorizeOnly) {
