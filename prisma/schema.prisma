@@ -305,8 +305,7 @@ model members {
     guild        servers         @relation(fields: [guildId], references: [guildId])
     connections  connections[]
     servers      memberServers[]
-    // @@index([userId, guildId])
-
+    
     @@unique([userId, guildId])
     @@index([userId])
     @@index([guildId])
@@ -330,7 +329,7 @@ model members {
 model connections {
     id                  Int      @id @default(autoincrement())
     memberId            Int
-    member              members  @relation(fields: [memberId], references: [id])
+    member              members  @relation(fields: [memberId], references: [id], onDelete: Cascade)
     connectionId        String
     name                String
     type                String
@@ -349,7 +348,7 @@ model connections {
 model memberServers {
     id             Int      @id @default(autoincrement())
     memberId       Int
-    member         members  @relation(fields: [memberId], references: [id])
+    member         members  @relation(fields: [memberId], references: [id], onDelete: Cascade)
     guildId        BigInt   @db.UnsignedBigInt
     name           String
     icon           String?

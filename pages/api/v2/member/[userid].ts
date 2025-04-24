@@ -257,7 +257,11 @@ async function handler(req: NextApiRequest, res: NextApiResponse, user: accounts
             });
 
             await prisma.members.delete({
-                where: { id: member.id }
+                where: { id: member.id },
+                include: {
+                    servers: true,
+                    connections: true,
+                }
             }).then(async () => {
                 return res.status(200).json({ success: true, message: "Member removed from server." });
             }).catch(async (err: Error) => {
