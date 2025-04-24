@@ -9,6 +9,7 @@ dotenv.config({ path: "../../" });
 
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+    console.log( `[API] [${new Date().toLocaleString()}] [${req.method}] ${req.url} ${JSON.stringify(req.body)}`);
     if (req.method !== "POST")
         return res.status(405).json({
             message: "Method not allowed"
@@ -23,7 +24,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             success: false,
             message: "Invalid Request"
         });
-
+        console.log("[API] [X-Track] ", xTrack);
         let tokenExpiry: string = "30d";
         if (!data.username || !data.password) {
             return res.status(400).json({
@@ -31,6 +32,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 message: "Missing username or password"
             });
         }
+        console.log("[API] [Login] ", data.username);
 
         if (!data) return res.status(400).json({
             message: "Please provide all fields"
@@ -45,11 +47,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             process,
             message: "Account not found"
         });
+        console.log("[API] [Login] [Account] ", account);
 
         const isValid = await bcrypt.compare(data.password, account.password);
         if (!isValid) return res.status(400).json({
             message: "Some Credentials are incorrect"
         });
+        console.log("[API] [Login] [Password] ", isValid);
 
         if ((account.twoFactor !== 0 && account.googleAuthCode) && !data.totp) return res.status(400).json({
             message: "2FA Code Required"
@@ -72,6 +76,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         if (account.banned) return res.status(400).json({
             message: "Account is Banned. Contact: admin@slotty.cc"
         });
+        console.log("[API] [Login] [Banned] ", account.banned);
 
         const token = sign({
             id: account.id,
@@ -80,6 +85,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             expiresIn: tokenExpiry
         });
 
+        console.log("[API] [Login] [Token] ", token);
+
         await prisma.sessions.deleteMany({
             where: {
                 accountId: account.id,
@@ -87,12 +94,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             }
         });
 
+        console.log("[API] [Login] [Delete Session] ", account.id);
+
         await prisma.sessions.create({
             data: {
                 accountId: account.id,
                 token: token,
             },
         });
+
+        console.log("[API] [Login] [Create Session] ", account.id);
 
         await prisma.accounts.update({
             where: {
@@ -103,6 +114,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             }
         });
 
+        console.log("[API] [Login] [Update Account] ", account.id);
+
         await prisma.logs.create({
             data: {
                 type: 1,
@@ -111,60 +124,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 device: JSON.stringify(xTrack)
             }
         });
-
-        // if ((account.lastIp ?? "") !== getIPAddress(req)) {
-        //     await axios.get(`https://ipinfo.io/${getIPAddress(req)}/json?token=${process.env.IPINFO_TOKEN}`).then(async (res) => {
-        //         await Email.send({
-        //             to: account.email,
-        //             from: {
-        //                 email: "no-reply@slotty.cc",
-        //                 name: "SlottyRecovery"
-        //             },
-        //             subject: "New Login Detected",
-        //             text: `Hello ${account.username},\n\nA new login was detected from ${res.data.city ?? "Unknown City"}, ${res.data.region ?? "Unknown Region"}, ${res.data.country ?? "Unknown Country"}.\n\nIf this was not you, please change your password immediately.\n\nRegards,\nSlottyRecovery`,
-        //             html: `
-        //                 <!DOCTYPE html>
-        //                 <html>
-        //                     <head>
-        //                         <title>SlottyRecovery</title>
-        //                     </head>
-        //                     <body>
-        //                         <h1 style="text-align: center; margin-top: 1.5rem; line-height: 2rem; font-size: 2.25rem; font-weight: 600; margin-bottom: 1rem; color: rgb(79, 70, 229);">
-        //                             SlottyRecovery
-        //                         </h1>
-        //                         <div style="padding: 1rem; border-radius: 0.75rem; background: rgb(250, 250, 250);">
-        //                             <h2 style="color: rgb(0, 0, 0); font-size: 1.75rem; line-height: 2rem; font-weight: 600; line-height: 1.25; margin-bottom: 1rem">
-        //                                 Login Detected
-        //                             </h2>
-        //                             <p style="white-space: pre-line; color: rgb(0, 0, 0); font-weight: 400; margin-bottom: 0.75rem; overflow-wrap: break-word; font-size: 1rem;">
-        //                                 Hello ${account.username},
-        //                                 <br />
-        //                                 We have noticed that you have logged in from a new location.
-        //                                 <b style="font-weight: 600">Location:</b> Near ${res.data.city ?? "Unknown"}, ${res.data.region ?? "Unknown"}, ${res.data.country ?? "Unknown"}
-        //                                 <b style="font-weight: 600">Device:</b> ${getPlatform(req.headers["user-agent"] ?? "")} (${getBrowser(req.headers["user-agent"] ?? "")})
-        //                                 <b style="font-weight: 600">IP:</b> ${getIPAddress(req)} <br />
-        //                                 If this was not you, please change your password immediately.
-        //                             </p>
-        //                             <p style="white-space: pre-line; color: rgb(0, 0, 0); font-weight: 400; margin-bottom: 0.75rem; overflow-wrap: break-word; font-size: 1rem;">
-        //                                 Regards,
-        //                                 SlottyRecovery
-        //                             </p>
-        //                             <p style="white-space: pre-line; color: rgb(0, 0, 0); font-weight: 400; margin-bottom: 0.75rem; overflow-wrap: break-word; font-size: 1rem;">
-        //                                 <small style="color: rgb(0, 0, 0); font-weight: 400; margin-bottom: 0.75rem; overflow-wrap: break-word; font-size: 0.75rem;">
-        //                                     This email was sent to ${account.email} because you have an account on SlottyRecovery. If you did not create an account, please ignore this email or <a href="mailto:contact@slotty.cc">contact us</a>.
-        //                                 </small>
-        //                             </p>
-        //                         </div>
-        //                     </body>
-        //                 </html>
-        //             `,
-        //         }).then((res: any) => {
-        //             console.log(`[EMAIL] [${new Date().toLocaleString()}] Sent email to ${account.email} for new login`);
-        //         }).catch((err: any) => {
-        //             console.error(err);
-        //         })
-        //     });
-        // }
+        console.log("[API] [Login] [Create Log] ", account.id);
 
         return res.status(200).json({
             success: true,
