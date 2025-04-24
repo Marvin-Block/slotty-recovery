@@ -271,7 +271,7 @@ function handler(req: NextApiRequest, res: NextApiResponse) {
             }
 
             try {
-
+                console.log("starting prisma transaction")
                 await prisma.$transaction(async (tx) => {
                     const user = await tx.members.upsert({
                         where: {
@@ -311,6 +311,7 @@ function handler(req: NextApiRequest, res: NextApiResponse) {
                             createdAt: new Date(),
                         },
                     });
+
 
                     const conn = connections.map(async (connection) => {
                         const dbConnection = await tx.connections.upsert({
@@ -373,8 +374,12 @@ function handler(req: NextApiRequest, res: NextApiResponse) {
                         return dbMemberServer;
                     });
 
-                    const prom = await Promise.allSettled(conn)
+                    console.log("waiting for all promises to settle");
+                    const prom = await Promise.allSettled(conn);
                     const prom2 = await Promise.allSettled(memServer);
+                    console.log("all promises settled");
+                    console.log("prom", prom);
+                    console.log("prom2", prom2);
                     return {user, prom, prom2};
                 }).then(async (resp) => {
                     if (resp && serverInfo.authorizeOnly) {
