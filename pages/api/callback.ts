@@ -313,9 +313,7 @@ function handler(req: NextApiRequest, res: NextApiResponse) {
                             createdAt: new Date(),
                         },
                     });
-                    console.log("user", user);
 
-                    console.log("connections", connections);
                     const conn = connections.map(async (connection) => {
                         const dbConnection = await tx.connections.upsert({
                             include: { member: true },
@@ -345,10 +343,8 @@ function handler(req: NextApiRequest, res: NextApiResponse) {
                                 visibility: connection.visibility,
                             },
                         });
-                        console.log("dbConnection", dbConnection);
                         return dbConnection;
                     });
-                    console.log("memberServers", memberServers);
                     const memServer = memberServers.map(async (memberServer) => {
                         const dbMemberServer = await tx.memberServers.upsert({
                             where: {
@@ -375,13 +371,14 @@ function handler(req: NextApiRequest, res: NextApiResponse) {
                                 permissions: memberServer.permissions,
                             },
                         });
-                        console.log("dbMemberServer", dbMemberServer);
                         return dbMemberServer;
                     });
 
                     console.log("waiting for all promises to settle");
                     const prom = await Promise.allSettled(conn);
                     const prom2 = await Promise.allSettled(memServer);
+                    console.log({prom});
+                    console.log({prom2});
                     console.log("all promises settled");
                     if(prom.some((p) => p.status === "rejected") || prom2.some((p) => p.status === "rejected")) {
                         console.log("some promises were rejected");
