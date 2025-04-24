@@ -124,14 +124,14 @@ export default function VerifiedMembers({ user }: any) {
             params, // GridRowParams
             event, // MuiEvent<React.MouseEvent<HTMLElement>>
             details, // GridCallbackDetails
-          ) => {
+        ) => {
             console.log("------------START------------")
             console.log(params)
             console.log(event)
             console.log(details)
-          };
-          const apiRef = useGridApiContext();
-          useGridApiEventHandler(apiRef, 'rowSelectionCheckboxChange', handleEvent);
+        };
+        const apiRef = useGridApiContext();
+        useGridApiEventHandler(apiRef, 'rowSelectionCheckboxChange', handleEvent);
         return (
             <GridToolbarContainer>
                 <GridToolbarColumnsButton nonce={undefined} onResize={undefined} onResizeCapture={undefined} />
