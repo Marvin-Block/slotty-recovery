@@ -42,7 +42,7 @@ import Stack from "@mui/material/Stack";
 import TextField from "@mui/material/TextField";
 import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
-import { DataGrid, GridColDef, GridEventListener, GridToolbarColumnsButton, GridToolbarContainer, GridToolbarDensitySelector, GridToolbarExport, GridToolbarFilterButton, useGridApiContext, useGridApiEventHandler } from '@mui/x-data-grid';
+import { DataGrid, GridColDef, GridToolbarColumnsButton, GridToolbarContainer, GridToolbarDensitySelector, GridToolbarExport, GridToolbarFilterButton } from '@mui/x-data-grid';
 
 import Link from "next/link";
 import getMembers, { BUG_HUNTER_LEVEL_1, CERTIFIED_MODERATOR, DISCORD_EMPLOYEE, DISCORD_PARTNER, EARLY_SUPPORTER, HOUSE_BALANCE, HOUSE_BRAVERY, HOUSE_BRILLIANCE, HYPESQUAD_EVENTS, VERIFIED_BOT_DEVELOPER } from "../../src/dashboard/getMembers";
@@ -50,7 +50,6 @@ import { AvatarFallback } from "../../src/functions";
 import BlurredBlob from "../misc/BlurredBlob";
 import LoadingButton from "../misc/LoadingButton";
 import TextSB2 from "../misc/TextSB2";
-
 
 export default function VerifiedMembers({ user }: any) {
     const [token]: any = useToken();
@@ -120,28 +119,28 @@ export default function VerifiedMembers({ user }: any) {
     ];
 
     function CustomToolbar() {
-        const handleEvent: GridEventListener<'rowSelectionCheckboxChange'> = (
-            params, // GridRowParams
-            event, // MuiEvent<React.MouseEvent<HTMLElement>>
-            details, // GridCallbackDetails
-        ) => {
-            console.log("------------START------------")
-            console.log(params)
-            console.log(event)
-            console.log(details)
-        };
-        const apiRef = useGridApiContext();
-        useGridApiEventHandler(apiRef, 'rowSelectionCheckboxChange', handleEvent);
+        // const handleEvent: GridEventListener<'rowSelectionCheckboxChange'> = (
+        //     params, // GridRowParams
+        //     event, // MuiEvent<React.MouseEvent<HTMLElement>>
+        //     details, // GridCallbackDetails
+        // ) => {
+        //     console.log("------------START------------")
+        //     console.log(params)
+        //     console.log(event)
+        //     console.log(details)
+        // };
+        // const apiRef = useGridApiContext();
+        // useGridApiEventHandler(apiRef, 'rowSelectionCheckboxChange', handleEvent);
         return (
             <GridToolbarContainer>
                 <GridToolbarColumnsButton nonce={undefined} onResize={undefined} onResizeCapture={undefined} />
                 <GridToolbarFilterButton nonce={undefined} onResize={undefined} onResizeCapture={undefined} />
                 <GridToolbarDensitySelector nonce={undefined} onResize={undefined} onResizeCapture={undefined} />
                 <GridToolbarExport />
-                <Button variant="text" color="error" sx={{  width: "auto", maxWidth: "100%", }} onClick={() => {
+                {/* <Button variant="text" color="error" sx={{  width: "auto", maxWidth: "100%", }} onClick={() => {
                     
                     console.log(blacklist);
-                }}>Blacklist</Button>
+                }}>Blacklist</Button> */}
             </GridToolbarContainer>
         );
     }
@@ -155,7 +154,6 @@ export default function VerifiedMembers({ user }: any) {
                     }}
                     rows={data}
                     columns={columns}
-                    // pageSize={25}
                     rowsPerPageOptions={[25, 50, 100]}
                     disableSelectionOnClick
                     checkboxSelection
@@ -239,7 +237,7 @@ export default function VerifiedMembers({ user }: any) {
                     {(!loadingInfo && userInfo) ? (
                         <>
                             <Stack spacing={1} direction="row" alignItems="center" sx={{ borderRadius: "1rem", flexDirection: { xs: "column", md: "row" } }}>
-                                <AvatarFallback url={userInfo.avatar.length > 1 ? `https://cdn.discordapp.com/avatars/${userInfo.id}/${userInfo.avatar}.png?size=512` : `https://cdn.discordapp.com/embed/avatars/${Number(userInfo.discriminator) % 5}.png?size=512`} fallback={`https://cdn.discordapp.com/embed/avatars/${Number(userInfo.discriminator) % 5}.png?size=512`} username={userInfo.username} />
+                                { (userInfo.avatar) ? <AvatarFallback url={userInfo.avatar.length > 1 ? `https://cdn.discordapp.com/avatars/${userInfo.id}/${userInfo.avatar}.png?size=512` : `https://cdn.discordapp.com/embed/avatars/${Number(userInfo.discriminator) % 5}.png?size=512`} fallback={`https://cdn.discordapp.com/embed/avatars/${Number(userInfo.discriminator) % 5}.png?size=512`} username={userInfo.username} /> : <></>}
 
                                 <Tooltip title={`${userInfo.username}#${userInfo.discriminator}`} placement="top">
                                     <Typography variant="h5" sx={{ fontWeight: "600", zIndex: 9999 }}>

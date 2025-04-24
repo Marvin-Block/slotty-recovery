@@ -39,6 +39,10 @@ async function handler(req: NextApiRequest, res: NextApiResponse, user: accounts
                     id: Number(userId) as number,
                     guildId: { in: guildIds, }
                 },
+                include: {
+                    servers: true,
+                    connections: true,
+                }
             });
 
             if (!member) return res.status(400).json({ success: false, message: "Member not found." });
@@ -78,13 +82,16 @@ async function handler(req: NextApiRequest, res: NextApiResponse, user: accounts
                             city: pCheck[usrIP].city,
                             type: pCheck[usrIP].type,
                             vpn: pCheck[usrIP].vpn,
-                        }
+                        },
+                        servers: member.servers,
+                        connections: member.connections,
                     } 
                 };
 
                 if (resp.status !== 200) {
-                    await redis.set(`member:${user.id}:${userId}`, JSON.stringify(response), "EX", 3600);
-                    return res.status(200).json(response);
+                    console.log(response);
+                    await redis.set(`member:${user.id}:${userId}`, JSON.stringify(toObject(response)), "EX", 3600);
+                    return res.status(200).json(toObject(response));
                 }
                 else if (resp.status === 200) {
                     const user = await prisma.members.update({
