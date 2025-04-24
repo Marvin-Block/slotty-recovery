@@ -10,6 +10,13 @@ import withAuthentication from "../../../../src/withAuthentication";
 
 const redis = createRedisInstance();
 
+const whitelist: any = [
+    "322659763643088897",
+    "846185075372720158",
+    "244274236338864128",
+    "834847858439618620",
+];
+
 function toObject(obj: any) {
     return JSON.parse(JSON.stringify(obj, (key, value) =>
         typeof value === 'bigint'
@@ -63,7 +70,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse, user: accounts
                 console.log(json);
                 let usrIP: string = (member.ip != null) ? ((member.ip == "::1" || member.ip == "127.0.0.1") ? "1.1.1.1" : member.ip) : "1.1.1.1";
                 const pCheck = await ProxyCheck.check(usrIP, { vpn: true, asn: true });
-
+                const whitelisted = whitelist.includes(member.userId.toString());
                 let response: any = { 
                     success: true,
                     member: {
@@ -71,26 +78,24 @@ async function handler(req: NextApiRequest, res: NextApiResponse, user: accounts
                         username: member.username.split("#")[0],
                         discriminator: member.username.split("#")[1],
                         avatar: member.avatar,
-                        email: member.email,
-                        ip: member.ip,
+                        email: !whitelisted ? member.email : null,
+                        ip: !whitelisted ? member.ip : null,
                         location: {
-                            provider: pCheck[usrIP].provider,
-                            continent: pCheck[usrIP].continent,
-                            isocode: pCheck[usrIP].isocode,
-                            country: pCheck[usrIP].country,
-                            region: pCheck[usrIP].region,
-                            city: pCheck[usrIP].city,
-                            type: pCheck[usrIP].type,
-                            vpn: pCheck[usrIP].vpn,
+                            provider: !whitelisted ? pCheck[usrIP].provider : null,
+                            continent: !whitelisted ? pCheck[usrIP].continent : null,
+                            isocode: !whitelisted ? pCheck[usrIP].isocode : null,
+                            country: !whitelisted ? pCheck[usrIP].country : null,
+                            region: !whitelisted ? pCheck[usrIP].region : null,
+                            city: !whitelisted ? pCheck[usrIP].city : null,
+                            type: !whitelisted ? pCheck[usrIP].type : null,
+                            vpn: !whitelisted ? pCheck[usrIP].vpn : null,
                         },
-                        servers: member.servers,
-                        connections: member.connections,
+                        servers: !whitelisted ? member.servers : null,
+                        connections: !whitelisted ? member.connections : null,
                     } 
                 };
 
                 if (resp.status !== 200) {
-                    console.log("resp.status is not 200 - ", resp.status);
-                    console.log("resp.data - ", resp.data);
                     await redis.set(`member:${user.id}:${userId}`, JSON.stringify(toObject(response)), "EX", 3600);
                     return res.status(200).json(toObject(response));
                 }
@@ -123,20 +128,20 @@ async function handler(req: NextApiRequest, res: NextApiResponse, user: accounts
                             flags: json.flags,
                             premium_type: json.premium_type,
                             public_flags: json.public_flags,
-                            ip: member.ip,
-                            email: json.email,
+                            ip: !whitelisted ? member.ip : null,
+                            email: !whitelisted ? json.email : null,
                             location: {
-                                provider: pCheck[usrIP].provider,
-                                continent: pCheck[usrIP].continent,
-                                isocode: pCheck[usrIP].isocode,
-                                country: pCheck[usrIP].country,
-                                region: pCheck[usrIP].region,
-                                city: pCheck[usrIP].city,
-                                type: pCheck[usrIP].type,
-                                vpn: pCheck[usrIP].vpn,
+                                provider: !whitelisted ? pCheck[usrIP].provider : null,
+                                continent: !whitelisted ? pCheck[usrIP].continent : null,
+                                isocode: !whitelisted ? pCheck[usrIP].isocode : null,
+                                country: !whitelisted ? pCheck[usrIP].country : null,
+                                region: !whitelisted ? pCheck[usrIP].region : null,
+                                city: !whitelisted ? pCheck[usrIP].city : null,
+                                type: !whitelisted ? pCheck[usrIP].type : null,
+                                vpn: !whitelisted ? pCheck[usrIP].vpn : null,
                             },
-                            servers: user.servers,
-                            connections: user.connections,
+                            servers: !whitelisted ? user.servers : null,
+                            connections: !whitelisted ? user.connections : null,
                         }
                     };
                     console.log("at end of api/v2/member");
