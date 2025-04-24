@@ -124,7 +124,8 @@ export default function VerifiedMembers({ user }: any) {
                 <GridToolbarFilterButton nonce={undefined} onResize={undefined} onResizeCapture={undefined} />
                 <GridToolbarDensitySelector nonce={undefined} onResize={undefined} onResizeCapture={undefined} />
                 <GridToolbarExport />
-                <Button variant="contained" color="error" sx={{  width: "100%", maxWidth: "100%", }} onClick={() => {
+                <Button variant="text" color="error" sx={{  width: "auto", maxWidth: "100%", }} onClick={() => {
+                    
                     console.log("clicked");
                 }}>Blacklist</Button>
             </GridToolbarContainer>
@@ -135,6 +136,10 @@ export default function VerifiedMembers({ user }: any) {
         return (
             <Paper sx={{ height: 500, width: '100%' }}>
                 <DataGrid
+                    onSelectionModelChange={(params, event) => {
+                        console.log(`Params: ${params}`);
+                        console.log(`Event: ${event}`);
+                    }}
                     rows={data}
                     columns={columns}
                     // pageSize={25}
