@@ -120,10 +120,10 @@ export default function VerifiedMembers({ user }: any) {
             <Avatar alt="Icon" key={params.row.id} src={"https://cdn.discordapp.com/icons/" + params.row.guildId + "/" + params.row.icon + ".webp?size=512"} />
         )},
         { field: 'guildId', headerName: 'Guild ID', width: 210 },
-        { field: 'name', headerName: 'Server Name', width: 340 },
+        { field: 'name', headerName: 'Server Name', width: 300 },
         { field: 'permissions', headerName: 'Permissions', type: 'number', width: 210 },
         { field: 'isOwner', headerName: 'Is Owner ?', type: 'boolean', width: 120 },
-        { field: 'serverCreation', headerName: 'Created At', width: 160, type: 'dateTime' },
+        { field: 'serverCreation', headerName: 'Created At', width: 210, type: 'dateTime' },
     ];
 
     function CustomToolbar() {
