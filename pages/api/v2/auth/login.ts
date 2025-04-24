@@ -116,7 +116,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
         console.log("[API] [Login] [Update Account] ", account.id);
 
-        await prisma.logs.create({
+        prisma.logs.create({
             data: {
                 type: 1,
                 username: `${account.username} (${account.id})`,

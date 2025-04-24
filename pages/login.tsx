@@ -144,7 +144,6 @@ export default function Login() {
                                     sx={{ mt: "2rem", mb: "0.5rem" }}
                                     event={async() => {
                                         await fetch(`/api/v2/auth/login`, {
-                                            signal: AbortSignal.timeout(10000),
                                             method: "POST",
                                             headers: {
                                                 "Content-Type": "application/json",
