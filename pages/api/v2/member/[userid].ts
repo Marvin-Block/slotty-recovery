@@ -89,7 +89,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse, user: accounts
                 };
 
                 if (resp.status !== 200) {
-                    console.log(response);
+                    console.log("resp.status is not 200 - ", resp.status);
+                    console.log("resp.data - ", resp.data);
                     await redis.set(`member:${user.id}:${userId}`, JSON.stringify(toObject(response)), "EX", 3600);
                     return res.status(200).json(toObject(response));
                 }
@@ -138,6 +139,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse, user: accounts
                             connections: user.connections,
                         }
                     };
+                    console.log("at end of api/v2/member");
+                    console.log(response);
 
                     await redis.set(`member:${user.id}:${userId}`, JSON.stringify(toObject(response)), "EX", 3600);
                     return res.status(200).json(toObject(response));

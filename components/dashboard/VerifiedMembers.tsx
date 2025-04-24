@@ -162,6 +162,7 @@ export default function VerifiedMembers({ user }: any) {
                     }}
                     rows={data}
                     columns={columns}
+                    // pageSize={25}
                     rowsPerPageOptions={[25, 50, 100]}
                     disableSelectionOnClick
                     checkboxSelection
