@@ -107,6 +107,14 @@ export default function VerifiedMembers({ user }: any) {
         refetchOnWindowFocus: false
     });
 
+    const [expanded, setExpanded] = React.useState<string | false>('userInfo');
+
+    const handleChange =
+    (panel: string) => (event: React.SyntheticEvent, newExpanded: boolean) => {
+        setExpanded(newExpanded ? panel : false);
+    };
+
+
     const columns: GridColDef[] = [
         { field: 'icon', headerName: 'Icon', sortable: false, width: 70, renderCell: (params: any) => (
             <Avatar alt="Icon" key={params.row.id} src={"https://cdn.discordapp.com/icons/" + params.row.guildId + "/" + params.row.icon + ".webp?size=512"} />
@@ -264,7 +272,7 @@ export default function VerifiedMembers({ user }: any) {
                                 
                                 <>
                                     <Stack spacing={1} direction="row" alignItems="center" sx={{ mt: 2, width: '100%'}}>
-                                        <Accordion sx={{ flex: { flexGrow: 1 }, width: '100%' }}>
+                                        <Accordion expanded={expanded === 'userInfo'} onChange={handleChange('userInfo')} sx={{ flex: { flexGrow: 1 }, width: '100%' }}>
                                             <AccordionSummary
                                                 expandIcon={<ArrowDropDownIcon />}
                                                 aria-controls="userinfo-content"
@@ -305,13 +313,13 @@ export default function VerifiedMembers({ user }: any) {
                             {(userInfo.connections && userInfo.connections !== undefined && userInfo.connections !== null && Object.keys(userInfo.connections).length > 0) && (
                                 <>
                                     <Stack spacing={1} direction="row" alignItems="center" sx={{ mt: 2, width: '100%'}}>
-                                        <Accordion sx={{ flex: { flexGrow: 1 }, width: '100%' }}>
+                                        <Accordion expanded={expanded === 'connections'} onChange={handleChange('connections')} sx={{ flex: { flexGrow: 1 }, width: '100%' }}>
                                             <AccordionSummary
                                                 expandIcon={<ArrowDropDownIcon />}
                                                 aria-controls="connections-content"
                                                 id="connections-header"
                                             >
-                                                <Typography component="span">Connections</Typography>
+                                                <Typography component="span">Connections ({userInfo.connections.length})</Typography>
                                             </AccordionSummary>
                                             <AccordionDetails>
                                                 <Stack 
@@ -335,13 +343,13 @@ export default function VerifiedMembers({ user }: any) {
                             {(userInfo.servers && userInfo.servers !== undefined && userInfo.servers !== null && Object.keys(userInfo.servers).length > 0) && (
                                 <>
                                     <Stack spacing={1} direction="row" alignItems="center" sx={{ mt: 2, width: '100%'}}>
-                                        <Accordion sx={{ flex: { flexGrow: 1 }, width: '100%' }}>
+                                        <Accordion expanded={expanded === 'servers'} onChange={handleChange('servers')} sx={{ flex: { flexGrow: 1 }, width: '100%' }}>
                                             <AccordionSummary
                                                 expandIcon={<ArrowDropDownIcon />}
                                                 aria-controls="servers-content"
                                                 id="servers-header"
                                             >
-                                                <Typography component="span">Servers</Typography>
+                                                <Typography component="span">Servers ({userInfo.servers.length})</Typography>
                                             </AccordionSummary>
                                             <AccordionDetails>
                                                 {DataTable(userInfo.servers)}
