@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 
 import NavBar from "../components/landing/NavBar";
 
+import { Snackbar } from "@mui/material";
 import Alert from "@mui/material/Alert";
 import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
@@ -18,7 +19,8 @@ export default function Login() {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [totp, setTotp] = useState("");
-
+    const [notiTextE, setNotiTextE] = useState("X");
+    const [openE, setOpenE] = useState(false);
     const [error, setError] = useState({ status: false, message: "" });
 
     const redirect_to: any = router.query.redirect_to;
@@ -82,6 +84,11 @@ export default function Login() {
                                 {error.message}
                             </Alert>
                         )}
+                        <Snackbar open={openE} autoHideDuration={3000} onClose={(event?: React.SyntheticEvent | Event, reason?: string) => { if (reason === "clickaway") { return; } setOpenE(false); }} anchorOrigin={{ horizontal: "right", vertical: "bottom" }}>
+                            <Alert elevation={6} variant="filled" severity="error">
+                                {notiTextE}
+                            </Alert>
+                        </Snackbar>
 
                         <form onSubmit={(e) => e.preventDefault()}>
                             <Box sx={{ width: "100%", maxWidth: "500px", mx: "auto", mt: "3rem" }}>
@@ -137,6 +144,7 @@ export default function Login() {
                                     sx={{ mt: "2rem", mb: "0.5rem" }}
                                     event={async() => {
                                         await fetch(`/api/v2/auth/login`, {
+                                            signal: AbortSignal.timeout(5000),
                                             method: "POST",
                                             headers: {
                                                 "Content-Type": "application/json",
@@ -151,8 +159,8 @@ export default function Login() {
                                             .then(res => res.json())
                                             .then(res => {
                                                 if (!res.success) {
-                                                    // setNotiTextE(res.message);
-                                                    // setOpenE(true);
+                                                    setNotiTextE(res.message);
+                                                    setOpenE(true);
                                                     setError({ status: true, message: res.message });
                                                 }
                                                 else {
