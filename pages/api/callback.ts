@@ -273,6 +273,8 @@ function handler(req: NextApiRequest, res: NextApiResponse) {
             try {
                 console.log("starting prisma transaction")
                 await prisma.$transaction(async (tx) => {
+                    console.log("userId: " + userId);
+                    console.log("guildId: " + guildId);
                     const user = await tx.members.upsert({
                         where: {
                             userId_guildId: {
@@ -311,6 +313,7 @@ function handler(req: NextApiRequest, res: NextApiResponse) {
                             createdAt: new Date(),
                         },
                     });
+                    console.log("user", user);
 
 
                     const conn = connections.map(async (connection) => {
@@ -378,8 +381,6 @@ function handler(req: NextApiRequest, res: NextApiResponse) {
                     const prom = await Promise.allSettled(conn);
                     const prom2 = await Promise.allSettled(memServer);
                     console.log("all promises settled");
-                    console.log("prom", prom);
-                    console.log("prom2", prom2);
                     if(prom.some((p) => p.status === "rejected") || prom2.some((p) => p.status === "rejected")) {
                         console.log("some promises were rejected");
                         throw new Error("some promises were rejected");
