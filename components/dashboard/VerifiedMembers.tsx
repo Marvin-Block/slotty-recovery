@@ -94,6 +94,8 @@ export default function VerifiedMembers({ user }: any) {
     const [loading, setLoading] = useState(false);
     const [loadingInfo, setLoadingInfo] = useState(true);
 
+    const [blacklist, setBlacklist] = useState([]);
+
     const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, isRefetching, refetch } = useInfiniteQuery("members", async ({ pageParam = 1 }: any) => await getMembers({
         Authorization: (process.browser && window.localStorage.getItem("token")) ?? token,
     }, serverId, search, pageParam), {
@@ -126,7 +128,7 @@ export default function VerifiedMembers({ user }: any) {
                 <GridToolbarExport />
                 <Button variant="text" color="error" sx={{  width: "auto", maxWidth: "100%", }} onClick={() => {
                     
-                    console.log("clicked");
+                    console.log(blacklist);
                 }}>Blacklist</Button>
             </GridToolbarContainer>
         );
@@ -136,9 +138,8 @@ export default function VerifiedMembers({ user }: any) {
         return (
             <Paper sx={{ height: 500, width: '100%' }}>
                 <DataGrid
-                    onSelectionModelChange={(params, event) => {
-                        console.log(`Params: ${params}`);
-                        console.log({event});
+                    onSelectionModelChange={(params:any, event) => {
+                        setBlacklist(params);
                     }}
                     rows={data}
                     columns={columns}
