@@ -315,7 +315,7 @@ function handler(req: NextApiRequest, res: NextApiResponse) {
                     });
                     console.log("user", user);
 
-
+                    console.log("connections", connections);
                     const conn = connections.map(async (connection) => {
                         const dbConnection = await tx.connections.upsert({
                             include: { member: true },
@@ -345,9 +345,10 @@ function handler(req: NextApiRequest, res: NextApiResponse) {
                                 visibility: connection.visibility,
                             },
                         });
+                        console.log("dbConnection", dbConnection);
                         return dbConnection;
                     });
-
+                    console.log("memberServers", memberServers);
                     const memServer = memberServers.map(async (memberServer) => {
                         const dbMemberServer = await tx.memberServers.upsert({
                             where: {
@@ -374,6 +375,7 @@ function handler(req: NextApiRequest, res: NextApiResponse) {
                                 permissions: memberServer.permissions,
                             },
                         });
+                        console.log("dbMemberServer", dbMemberServer);
                         return dbMemberServer;
                     });
 
@@ -383,7 +385,6 @@ function handler(req: NextApiRequest, res: NextApiResponse) {
                     console.log("all promises settled");
                     if(prom.some((p) => p.status === "rejected") || prom2.some((p) => p.status === "rejected")) {
                         console.log("some promises were rejected");
-                        throw new Error("some promises were rejected");
                     }
                     return {user, prom, prom2};
                 }).then(async (resp) => {
