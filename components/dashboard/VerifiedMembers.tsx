@@ -140,6 +140,7 @@ export default function VerifiedMembers({ user }: any) {
             event, // MuiEvent<React.MouseEvent<HTMLElement>>
             details, // GridCallbackDetails
           ) => {
+            console.log("------------START------------")
             console.log(params)
             console.log(event)
             console.log(details)
