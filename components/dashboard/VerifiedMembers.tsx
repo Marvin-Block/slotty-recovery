@@ -138,7 +138,7 @@ export default function VerifiedMembers({ user }: any) {
                 <DataGrid
                     onSelectionModelChange={(params, event) => {
                         console.log(`Params: ${params}`);
-                        console.log(`Event: ${event}`);
+                        console.log({event});
                     }}
                     rows={data}
                     columns={columns}
