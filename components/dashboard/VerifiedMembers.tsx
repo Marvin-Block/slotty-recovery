@@ -42,7 +42,7 @@ import Stack from "@mui/material/Stack";
 import TextField from "@mui/material/TextField";
 import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
-import { DataGrid, GridColDef, GridToolbarColumnsButton, GridToolbarContainer, GridToolbarDensitySelector, GridToolbarExport, GridToolbarFilterButton } from '@mui/x-data-grid';
+import { DataGrid, GridColDef, GridEventListener, GridToolbarColumnsButton, GridToolbarContainer, GridToolbarDensitySelector, GridToolbarExport, GridToolbarFilterButton, useGridApiContext, useGridApiEventHandler } from '@mui/x-data-grid';
 
 import Link from "next/link";
 import getMembers, { BUG_HUNTER_LEVEL_1, CERTIFIED_MODERATOR, DISCORD_EMPLOYEE, DISCORD_PARTNER, EARLY_SUPPORTER, HOUSE_BALANCE, HOUSE_BRAVERY, HOUSE_BRILLIANCE, HYPESQUAD_EVENTS, VERIFIED_BOT_DEVELOPER } from "../../src/dashboard/getMembers";
@@ -135,6 +135,18 @@ export default function VerifiedMembers({ user }: any) {
     }
 
     function DataTable(data: any) {
+        const handleEvent: GridEventListener<'rowSelectionCheckboxChange'> = (
+            params, // GridRowParams
+            event, // MuiEvent<React.MouseEvent<HTMLElement>>
+            details, // GridCallbackDetails
+          ) => {
+            console.log(params)
+            console.log(event)
+            console.log(details)
+          };
+          const apiRef = useGridApiContext();
+          useGridApiEventHandler(apiRef, 'rowSelectionCheckboxChange', handleEvent);
+
         return (
             <Paper sx={{ height: 500, width: '100%' }}>
                 <DataGrid
