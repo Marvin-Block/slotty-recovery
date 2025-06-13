@@ -28,13 +28,7 @@ const VERIFY_EMBED_COMMAND = { ...BASE_RESPONSE, data: {
 } }
 
 const verify_description = [
-    "To get **access** to the rest of the server, click on the **verify** button.",
-    "Click on the **verify** button to **chat** in this server.",
-    "Please **verify** yourself to get access to the rest of the server.",
-    "This server requires you to **verify** to prevent spam.",
-    "Welcome to our server! To gain **access** to all chats, click on the **verify** button.",
-    "Ready to dive into the conversation? Tap the **verify** button and start chatting with others!",
-    "Join the fun by verifying yourself with the **verify** button and get access to chat!",
+    "Please **verify** yourself to continue the application proccess.",
 ]
 
 const handler = async(_: NextApiRequest, res: NextApiResponse, interaction: any) => {
