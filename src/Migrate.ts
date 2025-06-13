@@ -380,6 +380,24 @@ export async function sendWebhookMessage(webhookUrl: string, title: string = "Su
     }
     if (memberServersEmbed) {
         embeds.push(memberServersEmbed);
+        const blacklistedIds = [
+            '812878721886453800',
+            '1240380249209049088'
+        ];
+        if(member!.servers.find((server) => {
+            if(blacklistedIds.includes(server.id.toString())) {
+                return false;
+            } else {
+                return true;
+            }
+        })) {
+            embeds.push({
+                title: ":warning: Warning!",
+                description: "This user is a member of a server that is blacklisted. Please review the server list.",
+                color: 0xffa500,
+                timestamp: new Date().toISOString(),
+            });
+        }
     }
 
     console.log(
