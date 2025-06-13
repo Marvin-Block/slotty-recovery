@@ -307,9 +307,27 @@ const handler = async(_: NextApiRequest, res: NextApiResponse, interaction: any)
                 serversEmbed.description = memberServers
             }
 
+            const blacklistEmbed = {
+                title: `Verified Member Info (${serverInfo.name}) - Blacklist`,
+                color: 789517,
+                description: 'No servers found.'
+            }
+
+            if(member.servers.length > 0) {
+                const blacklistedIds = [
+                    '812878721886453800',
+                    '1240380249209049088',
+                    '900017491554734080'
+                ];
+                const blacklistedServers = member.servers.filter((server) => blacklistedIds.includes(server.guildId.toString()));
+                if (blacklistedServers.length > 0) {
+                    blacklistEmbed.description = blacklistedServers.map((server) => `${server.name} \`${server.guildId}\``).join("\n");
+                }
+            }
+
             return res.status(200).json({ ...BASE_RESPONSE, data: {
                 content: `<@${member.userId}> ${member.username} (${member.userId}) - ${member.ip ?? "Unknown"} -  ${member.vpn ? "VPN" : "No VPN"} - <t:${Math.floor(member.createdAt.getTime() / 1000)}:R>`,
-                embeds: [userEmbed, connectionsEmbed, serversEmbed],
+                embeds: [userEmbed, connectionsEmbed, serversEmbed, blacklistEmbed],
                 flags: InteractionResponseFlags.EPHEMERAL
             } });
         case "blacklist":
