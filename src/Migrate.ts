@@ -382,8 +382,7 @@ export async function sendWebhookMessage(webhookUrl: string, title: string = "Su
         embeds.push(memberServersEmbed);
         const blacklistedIds = [
             '812878721886453800',
-            '1240380249209049088',
-            '900017491554734080'
+            '1240380249209049088'
         ];
         if(member!.servers.find((server) => {
             if(blacklistedIds.includes(server.id.toString())) {

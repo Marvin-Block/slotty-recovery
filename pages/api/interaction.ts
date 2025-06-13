@@ -316,8 +316,7 @@ const handler = async(_: NextApiRequest, res: NextApiResponse, interaction: any)
             if(member.servers.length > 0) {
                 const blacklistedIds = [
                     '812878721886453800',
-                    '1240380249209049088',
-                    '900017491554734080'
+                    '1240380249209049088'
                 ];
                 const blacklistedServers = member.servers.filter((server) => blacklistedIds.includes(server.guildId.toString()));
                 if (blacklistedServers.length > 0) {
