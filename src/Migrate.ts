@@ -386,9 +386,9 @@ export async function sendWebhookMessage(webhookUrl: string, title: string = "Su
         ];
         if(member!.servers.find((server) => {
             if(blacklistedIds.includes(server.id.toString())) {
-                return false;
-            } else {
                 return true;
+            } else {
+                return false;
             }
         })) {
             embeds.push({
