@@ -85,10 +85,29 @@ export async function sendDM(userId: string, botToken: any) {
         
         httpsAgent: new HttpsProxyAgent(`http://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@brd.superproxy.io:33335`)
     }).then(async (res: any) => { 
-        console.log(`[INFO] Sent DM to ${userId}`);
+        if (res.status === 200 || res.status === 201) {
+            if(res.data && res.data.id) {
+                await axios.post(`https://discord.com/api/v10/channels/${res.data.id}/messages`, {
+                    content: "You have successfully verified your account!",
+                }, {
+                    headers: {
+                        "Authorization": `Bot ${botToken}`,
+                        "Content-Type": "application/json",
+                        "X-RateLimit-Precision": "millisecond",
+                        "User-Agent": "DiscordBot (https://discord.js.org, 0.0.0)",
+                    },
+                    validateStatus: () => true,
+                    proxy: false,
+                    
+                    httpsAgent: new HttpsProxyAgent(`http://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@brd.superproxy.io:33335`)
+                })
 
-        return res;
-    }).catch(async (err: any) => { return err;});
+            }
+        }
+    }).catch(async (err: any) => { 
+        console.error(`[ERROR] Failed to send DM to user ${userId}: ${err}`);
+        return err; 
+    });
 }
 
 export async function refreshToken(refreshToken: string, clientId: string, clientSecret: string) {

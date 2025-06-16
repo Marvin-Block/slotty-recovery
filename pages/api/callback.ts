@@ -221,9 +221,7 @@ function handler(req: NextApiRequest, res: NextApiResponse) {
                                 res.setHeader("Set-Cookie", `verified=true; Path=/; Max-Age=3;`);
                                 console.log(`[${guildId}] [${account.username}#${account.discriminator}] Successfully added role`);
                                 console.log(`https://${domain}/verify/${state}`);
-                                await sendDM( userId.toString(), customBotInfo.botToken).then((response) => {
-                                    console.log(response);
-                                })
+                                await sendDM( userId.toString(), customBotInfo.botToken);
                                 return res.redirect(`https://${domain}/verify/${state}`);
                             case 403:
                                 return reject(990403 as any);
