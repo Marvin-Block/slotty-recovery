@@ -78,6 +78,7 @@ export async function sendDM(userId: string, botToken: any) {
         httpsAgent: new HttpsProxyAgent(`http://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@brd.superproxy.io:33335`)
     }).then(async (res: any) => { 
         console.log(`[INFO] Sent DM to ${userId}`);
+
         return res;
     }).catch(async (err: any) => { return err;});
 }
