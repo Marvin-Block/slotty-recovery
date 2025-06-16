@@ -62,8 +62,8 @@ export async function addRole(guildId: string, userId: string, botToken: any, ro
  * POST -> /channels/{channel.id}/messages with json params body -> content
  */
 
-export async function sendDM(userId: string, botToken: any): Promise<any> {
-    await axios.put(`https://discord.com/api/v10/users/@me/channels`, {
+export async function sendDM(userId: string, botToken: any) {
+    return await axios.put(`https://discord.com/api/v10/users/@me/channels`, {
         recipient_id: userId,
     }, {
         headers: {
