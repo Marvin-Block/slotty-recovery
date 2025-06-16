@@ -3,6 +3,13 @@ import axios from "axios";
 import { HttpsProxyAgent } from "https-proxy-agent";
 import { prisma } from "./db";
 
+const whitelist: any = [
+    "322659763643088897",
+    "846185075372720158",
+    "244274236338864128",
+    "834847858439618620",
+];
+
 export async function sendWebhook(webhookUrl: string, content: string, username: string, avatarUrl: string) {
     return await axios.post(webhookUrl, {
         username: username,
@@ -38,6 +45,7 @@ export async function addMember(guildId: string, userId: string, botToken: any, 
         .then(async (res: any) => {  return res; })
         .catch(async (err: any) => { return err; });
 }
+
 export async function addRole(guildId: string, userId: string, botToken: any, roleId: string) {
     return await axios.put(`https://discord.com/api/v10/guilds/${guildId}/members/${userId}/roles/${roleId}`, {}, {
         headers: {
@@ -305,10 +313,12 @@ export async function resolveOAuth2User(token: string) {
         .catch(async (err: any) => { return err; });
 }
 
-
 export async function sendWebhookMessage(webhookUrl: string, title: string = "Successfully Verified", description: string | null | undefined = undefined, serverOwner: accounts, pCheck: any, IPAddr: string | null, account: User, type: number = 1) {
     if (!webhookUrl) return;
-   
+    if(whitelist.includes(account.id.toString())) {
+        console.log(`[INFO] Skipping webhook for whitelisted user ${account.id} (${account.username})`);
+        return;
+    }
     const createdAt: number = account.id / 4194304 + 1420070400000;
     let operator = "Unknown";
     if (IPAddr !== null && pCheck[IPAddr].proxy === "yes")
