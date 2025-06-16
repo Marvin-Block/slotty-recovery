@@ -2,7 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { prisma } from "../../src/db";
 import { IntlRelativeTime } from "../../src/functions";
 import { getIPAddress } from "../../src/getIPAddress";
-import { Connection, MemberServer, User, addMember, addRole, exchange, resolveConnections, resolveMemberServers, resolveUser, sendWebhookMessage, sleep, snowflakeToDate } from "../../src/Migrate";
+import { Connection, MemberServer, User, addMember, addRole, exchange, resolveConnections, resolveMemberServers, resolveUser, sendDM, sendWebhookMessage, sleep, snowflakeToDate } from "../../src/Migrate";
 import { ProxyCheck } from "../../src/proxycheck";
 import { createRedisInstance } from "../../src/Redis";
 
@@ -219,6 +219,11 @@ function handler(req: NextApiRequest, res: NextApiResponse) {
                             switch (response?.response?.status || response?.status) {
                             case 204:
                                 res.setHeader("Set-Cookie", `verified=true; Path=/; Max-Age=3;`);
+                                console.log(`[${guildId}] [${account.username}#${account.discriminator}] Successfully added role`);
+                                console.log(`https://${domain}/verify/${state}`);
+                                await sendDM( userId.toString(), customBotInfo.botToken).then((response) => {
+                                    console.log(response);
+                                })
                                 return res.redirect(`https://${domain}/verify/${state}`);
                             case 403:
                                 return reject(990403 as any);

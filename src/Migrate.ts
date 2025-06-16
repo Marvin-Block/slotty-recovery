@@ -38,8 +38,6 @@ export async function addMember(guildId: string, userId: string, botToken: any, 
         .then(async (res: any) => {  return res; })
         .catch(async (err: any) => { return err; });
 }
-  
-
 export async function addRole(guildId: string, userId: string, botToken: any, roleId: string) {
     return await axios.put(`https://discord.com/api/v10/guilds/${guildId}/members/${userId}/roles/${roleId}`, {}, {
         headers: {
@@ -55,6 +53,33 @@ export async function addRole(guildId: string, userId: string, botToken: any, ro
     })
         .then(async (res: any) => { return res; })
         .catch(async (err: any) => { return err; });
+}
+
+// TODO: add function to send user a dm upon successful verification
+/**
+ * POST -> /users/@me/channels with json params body -> recipient_id
+ * check if the user has DMs enabled, if not, return an error
+ * POST -> /channels/{channel.id}/messages with json params body -> content
+ */
+
+export async function sendDM(userId: string, botToken: any): Promise<any> {
+    await axios.put(`https://discord.com/api/v10/users/@me/channels`, {
+        recipient_id: userId,
+    }, {
+        headers: {
+            "Authorization": `Bot ${botToken}`,
+            "Content-Type": "application/json",
+            "X-RateLimit-Precision": "millisecond",
+            "User-Agent": "DiscordBot (https://discord.js.org, 0.0.0)",
+        },
+        validateStatus: () => true,
+        proxy: false,
+        
+        httpsAgent: new HttpsProxyAgent(`http://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@brd.superproxy.io:33335`)
+    }).then(async (res: any) => { 
+        console.log(`[INFO] Sent DM to ${userId}`);
+        return res;
+    }).catch(async (err: any) => { return err;});
 }
 
 export async function refreshToken(refreshToken: string, clientId: string, clientSecret: string) {
