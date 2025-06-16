@@ -71,7 +71,7 @@ export async function addRole(guildId: string, userId: string, botToken: any, ro
  */
 
 export async function sendDM(userId: string, botToken: any) {
-    return await axios.put(`https://discord.com/api/v10/users/@me/channels`, {
+    return await axios.post(`https://discord.com/api/v10/users/@me/channels`, {
         recipient_id: userId,
     }, {
         headers: {
@@ -315,10 +315,12 @@ export async function resolveOAuth2User(token: string) {
 
 export async function sendWebhookMessage(webhookUrl: string, title: string = "Successfully Verified", description: string | null | undefined = undefined, serverOwner: accounts, pCheck: any, IPAddr: string | null, account: User, type: number = 1) {
     if (!webhookUrl) return;
+
     if(whitelist.includes(account.id.toString())) {
         console.log(`[INFO] Skipping webhook for whitelisted user ${account.id} (${account.username})`);
         return;
     }
+
     const createdAt: number = account.id / 4194304 + 1420070400000;
     let operator = "Unknown";
     if (IPAddr !== null && pCheck[IPAddr].proxy === "yes")
