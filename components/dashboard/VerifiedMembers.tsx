@@ -283,7 +283,7 @@ export default function VerifiedMembers({ user }: any) {
                             </Stack>
                             {(userInfo.servers && userInfo.servers !== undefined && userInfo.servers !== null && Object.keys(userInfo.servers).length > 0) && (
                                 <>
-                                    <Stack spacing={1} direction="row" alignItems="center" sx={{ borderRadius: "1rem", flexDirection: { xs: "column", md: "row" } }}>
+                                    <Stack spacing={1} direction="row" alignItems="center" sx={{ borderRadius: "1rem", flexDirection: { xs: "column", md: "row" }, mt: 2 }}>
                                         <Typography component="span">Whitelist</Typography>
                                         {userInfo.servers.filter((server: any) => {
                                             if (whitelist[server.guildId]) {
@@ -292,7 +292,7 @@ export default function VerifiedMembers({ user }: any) {
                                             return false;
                                         }).map((server: any) => {
                                             return (
-                                                <Chip key={server.guildId} label={`${whitelist[server.guildId]} | ${server.name}`} sx={{ mr: 1 }} />
+                                                <Chip color="success" variant="outlined" key={server.guildId} label={`${whitelist[server.guildId]} | ${server.name}`} sx={{ mr: 1 }} />
                                             );
                                         })}
                                     </Stack>
