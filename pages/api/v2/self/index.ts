@@ -131,8 +131,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse, user: accounts
 
             const email = await prisma.emails.findFirst({
                 where: {
-                    accountId: user.id,
-                    code: confirmCode,
+                    accountId: user.id
                 },
             });
 
