@@ -114,40 +114,40 @@ async function handler(req: NextApiRequest, res: NextApiResponse, user: accounts
 
             if (password === newPassword) return res.status(400).json({ success: false, message: "New password cannot be the same as the old password." });
 
-            const lEmail = await prisma.emails.findFirst({
-                where: {
-                    accountId: user.id,
-                    title: "Password Change",
-                    createdAt: {
-                        gte: new Date(new Date().getTime() - 24 * 60 * 60 * 1000)
-                    },
-                    used: true,
-                }
-            });
+            // const lEmail = await prisma.emails.findFirst({
+            //     where: {
+            //         accountId: user.id,
+            //         title: "Password Change",
+            //         createdAt: {
+            //             gte: new Date(new Date().getTime() - 24 * 60 * 60 * 1000)
+            //         },
+            //         used: true,
+            //     }
+            // });
 
-            if (lEmail) return res.status(400).json({ success: false, message: "You can change your password every 24 hours, contact support if you need it to be changed right now." });
+            // if (lEmail) return res.status(400).json({ success: false, message: "You can change your password every 24 hours, contact support if you need it to be changed right now." });
 
             const newHash = await hash(newPassword, 10);
 
-            const email = await prisma.emails.findFirst({
-                where: {
-                    accountId: user.id
-                },
-            });
+            // const email = await prisma.emails.findFirst({
+            //     where: {
+            //         accountId: user.id
+            //     },
+            // });
 
-            if (!email || email.expires < new Date()) return res.status(400).json({ success: false, message: "Invalid confirmation code." });
+            // if (!email || email.expires < new Date()) return res.status(400).json({ success: false, message: "Invalid confirmation code." });
 
-            if (email.used) return res.status(400).json({ success: false, message: "Confirmation code already used." });
+            // if (email.used) return res.status(400).json({ success: false, message: "Confirmation code already used." });
 
-            await prisma.emails.update({
-                where: {
-                    id: email.id
-                },
-                data: {
-                    expires: new Date(Date.now() - 1),
-                    used: true
-                }
-            });
+            // await prisma.emails.update({
+            //     where: {
+            //         id: email.id
+            //     },
+            //     data: {
+            //         expires: new Date(Date.now() - 1),
+            //         used: true
+            //     }
+            // });
 
             await prisma.accounts.update({
                 where: {
