@@ -64,7 +64,8 @@ const whitelist: { [key: string]: string } = {
 };
 
 const blacklist: { [key: string]: string } = {
-    "1074973203249770538" : "Dev Test Server"
+    "1074973203249770538" : "Dev Test Server",
+    "1362445089120714762" : "Dev Test Server 2",
 };
 
 export default function VerifiedMembers({ user }: any) {
