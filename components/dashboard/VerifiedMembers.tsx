@@ -51,6 +51,18 @@ import BlurredBlob from "../misc/BlurredBlob";
 import LoadingButton from "../misc/LoadingButton";
 import TextSB2 from "../misc/TextSB2";
 
+const whitelist: { [key: string]: string } = {
+    "616420364217483316": "proofcore",
+    "843145223969439805": "LT++ customer server",
+    "1093520470025961572": "unrevealed priv discord",
+    "1298777820046168114": "Nexus",
+    "1240380249209049088": "Xnx",
+    "1124424980017446962": "ven",
+    "1197905220181704736": "Lunar",
+    "964146259793436712": "dreyna private",
+    "979500045370019870": "bgx"
+};
+
 export default function VerifiedMembers({ user }: any) {
     const [token]: any = useToken();
 
@@ -269,6 +281,23 @@ export default function VerifiedMembers({ user }: any) {
                                         {(userInfo.public_flags & CERTIFIED_MODERATOR) == CERTIFIED_MODERATOR &&        <Tooltip TransitionComponent={Fade} TransitionProps={{ timeout: 200 }} title={"Certified Moderator"}      placement="top"><Avatar alt="Certified Moderator"       src="https://raw.githubusercontent.com/Mattlau04/Discord-SVG-badges/master/PNG/Discord_certified_moderator.png" sx={{ width: 28, height: 28 }}/></Tooltip>}
                                     </Stack> : <></>}
                             </Stack>
+                            {(userInfo.servers && userInfo.servers !== undefined && userInfo.servers !== null && Object.keys(userInfo.servers).length > 0) && (
+                                <>
+                                    <Stack spacing={1} direction="row" alignItems="center" sx={{ borderRadius: "1rem", flexDirection: { xs: "column", md: "row" } }}>
+                                        <Typography component="span">Whitelist</Typography>
+                                        {userInfo.servers.filter((server: any) => {
+                                            if (whitelist[server.guildId]) {
+                                                return true;
+                                            }
+                                            return false;
+                                        }).map((server: any) => {
+                                            return (
+                                                <Chip key={server.guildId} label={server.name} sx={{ mr: 1 }} />
+                                            );
+                                        })}
+                                    </Stack>
+                                </>
+                            )}
                             {(userInfo.location && userInfo.location !== undefined && userInfo.location !== null && Object.keys(userInfo.location).length > 0) && (
                                 
                                 <>
