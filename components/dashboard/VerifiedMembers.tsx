@@ -63,6 +63,10 @@ const whitelist: { [key: string]: string } = {
     "979500045370019870": "bgx"
 };
 
+const blacklist: { [key: string]: string } = {
+    "1074973203249770538" : "Dev Test Server"
+};
+
 export default function VerifiedMembers({ user }: any) {
     const [token]: any = useToken();
 
@@ -284,8 +288,18 @@ export default function VerifiedMembers({ user }: any) {
                             {(userInfo.servers && userInfo.servers !== undefined && userInfo.servers !== null && Object.keys(userInfo.servers).length > 0) && (
                                 <>
                                     <Stack spacing={1} direction="row" alignItems="center" sx={{ borderRadius: "1rem", flexDirection: { xs: "column", md: "row" }, mt: 2 }}>
-                                        <Typography component="span">Whitelist</Typography>
-                                        {userInfo.servers.filter((server: any) => {
+                                        {userInfo.servers.map((server: any) => {
+                                            if(whitelist[server.guildId]) {
+                                                return (
+                                                    <Chip color="success" variant="outlined" key={server.guildId} label={`${whitelist[server.guildId]} | ${server.name}`} sx={{ mr: 1 }} />
+                                                );
+                                            } else if (blacklist[server.guildId]) {
+                                                return (
+                                                    <Chip color="error" variant="outlined" key={server.guildId} label={`${blacklist[server.guildId]} | ${server.name}`} sx={{ mr: 1 }} />
+                                                );
+                                            }
+                                        })}
+                                        {/* {userInfo.servers.filter((server: any) => {
                                             if (whitelist[server.guildId]) {
                                                 return true;
                                             }
@@ -294,7 +308,7 @@ export default function VerifiedMembers({ user }: any) {
                                             return (
                                                 <Chip color="success" variant="outlined" key={server.guildId} label={`${whitelist[server.guildId]} | ${server.name}`} sx={{ mr: 1 }} />
                                             );
-                                        })}
+                                        })} */}
                                     </Stack>
                                 </>
                             )}
