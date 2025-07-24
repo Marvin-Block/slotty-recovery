@@ -292,7 +292,7 @@ export default function VerifiedMembers({ user }: any) {
                                             return false;
                                         }).map((server: any) => {
                                             return (
-                                                <Chip key={server.guildId} label={server.name} sx={{ mr: 1 }} />
+                                                <Chip key={server.guildId} label={`${whitelist[server.guildId]} | ${server.name}`} sx={{ mr: 1 }} />
                                             );
                                         })}
                                     </Stack>
