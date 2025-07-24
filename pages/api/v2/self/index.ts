@@ -5,9 +5,8 @@ import { NextApiRequest, NextApiResponse } from "next";
 import * as speakeasy from "speakeasy";
 import Stripe from "stripe";
 import { prisma } from "../../../../src/db";
-import Email from "../../../../src/email";
 import { generateQRUrl } from "../../../../src/functions";
-import { getBrowser, getIPAddress, getPlatform, getXTrack } from "../../../../src/getIPAddress";
+import { getIPAddress, getXTrack } from "../../../../src/getIPAddress";
 import withAuthentication from "../../../../src/withAuthentication";
 
 
@@ -130,171 +129,48 @@ async function handler(req: NextApiRequest, res: NextApiResponse, user: accounts
 
             const newHash = await hash(newPassword, 10);
 
-            if (!confirmCode) {
-                const code = Math.floor(Math.random() * 1000000).toString().padStart(6, "0");
+            const email = await prisma.emails.findFirst({
+                where: {
+                    accountId: user.id,
+                    code: confirmCode,
+                },
+            });
 
-                await prisma.emails.create({
-                    data: {
-                        accountId: user.id,
-                        title: "Password Change",
-                        code: code,
-                        expires: new Date(Date.now() + 30 * 60 * 1000)
-                    }
-                });
+            if (!email || email.expires < new Date()) return res.status(400).json({ success: false, message: "Invalid confirmation code." });
 
-                await Email.send({
-                    to: user.email,
-                    from: {
-                        email: "no-reply@slotty.cc",
-                        name: "SlottyRecovery"
-                    },
-                    subject: "Password Change Confirmation",
-                    html:
-                        `
-                        <!DOCTYPE html>
-                        <html>
-                            <head>
-                                <title>SlottyRecovery</title>
-                            </head>
-                            <body>
-                            	<h1 style="text-align: center; margin-top: 1.5rem; line-height: 2rem; font-size: 2.25rem; font-weight: 600; margin-bottom: 1rem; color: rgb(79, 70, 229);">
-                            		SlottyRecovery
-                            	</h1>
-                            	<div style="padding: 1rem; max-width: 30rem; margin-left: auto;margin-right: auto; width: 100%; border-radius: 0.75rem; border-width: 1px; background: rgb(250, 250, 250);">
-                                    <h2 style="color: rgb(0, 0, 0); font-size: 1.75rem; line-height: 2rem; font-weight: 600; line-height: 1.25; margin-bottom: 1rem">
-                                        Password Change Confirmation
-                            		</h2>
-                            		<div>
-                                           <p style="white-space: pre-line; color: rgb(0, 0, 0); font-weight: 400; margin-bottom: 0.75rem; overflow-wrap: break-word; font-size: 1rem;">
-                            				Hello ${user.username},
-                                            To confirm that you want to change your password, please enter the following code into the SlottyRecovery website (The code will expire in 30 minutes):
-                                            <br />
-                                            <b>${code}</b>
-                                            <br />
-                                            <b style="font-weight: 600">Device:</b> ${getPlatform(req.headers["user-agent"] ?? "")} (${getBrowser(req.headers["user-agent"] ?? "")})
-                            				<b style="font-weight: 600">IP:</b> ${getIPAddress(req)} <br />
-                            				If this was not you, you can safely ignore this email.
-                                            If you have any questions, please contact us at <a style="color: rgb(56,189, 248);" href="mailto:contact@slotty.cc">contact@slotty.cc</a>.
-                                            <br />
-                                            Sincerely,
-                                            SlottyRecovery
-                            			</p>
-                            		</div>
-                                    <div style="text-align: center; margin-top: 1rem;">
-                                        <em style="color: rb(190, 198, 213)">
-                                            Copyright &#169; 2025 SlottyRecovery. All rights reserved.
-                                        </em>
-                                    </div>
-                            	</div>
-                            </body>
-                        </html>
-                        `,
-                }).then(() => {
-                    console.log(`[EMAIL] [${new Date().toLocaleString()}] Confirmation code sent to ${user.email}.`);
-                    return res.status(200).json({ success: true, message: "Confirmation code sent." });
-                }).catch((err: any) => {
-                    console.error(err);
-                })
-            } else {
+            if (email.used) return res.status(400).json({ success: false, message: "Confirmation code already used." });
 
-                const email = await prisma.emails.findFirst({
-                    where: {
-                        accountId: user.id,
-                        code: confirmCode,
-                    },
-                });
+            await prisma.emails.update({
+                where: {
+                    id: email.id
+                },
+                data: {
+                    expires: new Date(Date.now() - 1),
+                    used: true
+                }
+            });
 
-                if (!email || email.expires < new Date()) return res.status(400).json({ success: false, message: "Invalid confirmation code." });
+            await prisma.accounts.update({
+                where: {
+                    id: user.id
+                },
+                data: {
+                    password: newHash
+                }
+            });
 
-                if (email.used) return res.status(400).json({ success: false, message: "Confirmation code already used." });
+            await prisma.sessions.deleteMany({
+                where: {
+                    accountId: user.id
+                }
+            });
 
-                await prisma.emails.update({
-                    where: {
-                        id: email.id
-                    },
-                    data: {
-                        expires: new Date(Date.now() - 1),
-                        used: true
-                    }
-                });
-                
-                await axios.get(`https://ipinfo.io/${getIPAddress(req)}/json?token=${process.env.IPINFO_TOKEN}`).then(async (res) => {
-                    await Email.send({
-                        to: user.email,
-                        from: {
-                            email: "no-reply@slotty.cc",
-                            name: "SlottyRecovery"
-                        },
-                        subject: "SlottyRecovery Password Changed",
-                        html:
-                            `
-                                <!DOCTYPE html>
-                                <html>
-                                	<head>
-                                		<title>SlottyRecovery</title>
-                                	</head>
-                                	<body>
-                                		<h1 style="text-align: center; margin-top: 1.5rem; line-height: 2rem; font-size: 2.25rem; font-weight: 600; margin-bottom: 1rem; color: rgb(79, 70, 229);">
-                                			SlottyRecovery
-                                		</h1>
-                                		<div style="padding: 1rem; max-width: 30rem; margin-left: auto;margin-right: auto; width: 100%; border-radius: 0.75rem; border-width: 1px; background: rgb(250, 250, 250);">
-                                            <h2 style="color: rgb(0, 0, 0); font-size: 1.75rem; line-height: 2rem; font-weight: 600; line-height: 1.25; margin-bottom: 1rem">
-                                				Your password has been changed
-                                			</h2>
-                                			<div>
-                                                <p style="white-space: pre-line; color: rgb(0, 0, 0); font-weight: 400; margin-bottom: 0.75rem; overflow-wrap: break-word; font-size: 1rem;">
-                                					Hello ${user.username},
-                                					You password has been changed on ${new Date().toLocaleString()} (local time).
-                                                    <br />
-                                					<b style="font-weight: 600">Location:</b> Near ${res.data.city ?? "Unknown"}, ${res.data.region ?? "Unknown"}, ${res.data.country ?? "Unknown"}
-                                                    <b style="font-weight: 600">Device:</b> ${getPlatform(req.headers["user-agent"] ?? "")} (${getBrowser(req.headers["user-agent"] ?? "")})
-                                					<b style="font-weight: 600">IP:</b> ${getIPAddress(req)} <br />
-                                					If this was not you, contact us immediately at <a style="color: rgb(56,189, 248);" href="mailto:contact@slotty.cc">contact@slotty.cc</a> or <a style="color: rgb(56,189, 248);" href="https://t.me/SlottyRecovery">SlottyRecovery Telegram</a>.
-                                                    If you have any questions, please contact us at <a style="color: rgb(56,189, 248);" href="mailto:contact@slotty.cc">contact@slotty.cc</a>.
-                                                    <br />
-                                                    Sincerely,
-                                                    SlottyRecovery
-                                				</p>
-                                			</div>
-                                            <div style="text-align: center; margin-top: 1rem;">
-                                                <em style="color: rb(190, 198, 213)">
-                                                    Copyright &#169; 2025 SlottyRecovery. All rights reserved.
-                                                </em>
-                                            </div>
-                                		</div>
-                                	</body>
-                                </html>
-                            `,
-                    }).then(() => {
-                        console.log(`[EMAIL] [${new Date().toLocaleString()}] Password changed for ${user.username} (${user.email})`);
-                    }).catch((err: any) => {
-                        console.error(err);
-                    })
-                });
-
-                await prisma.accounts.update({
-                    where: {
-                        id: user.id
-                    },
-                    data: {
-                        password: newHash
-                    }
-                });
-
-                await prisma.sessions.deleteMany({
-                    where: {
-                        accountId: user.id
-                    }
-                });
-
-                return res.status(200).json({ success: true, message: "Password changed, you will be logged out." });
-            }
+            return res.status(200).json({ success: true, message: "Password changed, you will be logged out." });
         }
         catch (err: any) {
             console.error(err);
             return res.status(400).json({ success: false, message: "Something went wrong" });
         }
-        break;
     case "PATCH":
         try {
             const xTrack = getXTrack(req);
@@ -360,60 +236,6 @@ async function handler(req: NextApiRequest, res: NextApiResponse, user: accounts
                             expires: new Date(Date.now() + 30 * 60 * 1000)
                         }
                     });
-
-                    await Email.send({
-                        to: user.email,
-                        from: {
-                            email: "no-reply@slotty.cc",
-                            name: "SlottyRecovery"
-                        },
-                        subject: "SlottyRecovery Email Change Confirmation",
-                        html: `
-                            <!DOCTYPE html>
-                            <html>
-                            	<head>
-                            		<title>SlottyRecovery</title>
-                            	</head>
-                            	<body>
-                            		<h1 style="text-align: center; margin-top: 1.5rem; line-height: 2rem; font-size: 2.25rem; font-weight: 600; margin-bottom: 1rem; color: rgb(79, 70, 229);">
-                            			SlottyRecovery
-                            		</h1>
-                            		<div style="padding: 1rem; max-width: 30rem; margin-left: auto;margin-right: auto; width: 100%; border-radius: 0.75rem; border-width: 1px; background: rgb(250, 250, 250);">
-                                        <h2 style="color: rgb(0, 0, 0); font-size: 1.75rem; line-height: 2rem; font-weight: 600; line-height: 1.25; margin-bottom: 1rem">
-                                            Email Change Confirmation
-                                        </h2>
-                            			<div>
-                                            <p style="white-space: pre-line; color: rgb(0, 0, 0); font-weight: 400; margin-bottom: 0.75rem; overflow-wrap: break-word; font-size: 1rem;">
-                            					Hello ${user.username},
-                                                To confirm that you want to change your email from ${user.email} to ${email}, please enter the following code into the SlottyRecovery website (The code will expire in 30 minutes):
-                                                <br />
-                                                <b><code>${code}</code></b>
-                                                <br />
-                            					<b style="font-weight: 600">Location:</b> Near ${res.data.city ?? "Unknown"}, ${res.data.region ?? "Unknown"}, ${res.data.country ?? "Unknown"}
-                                                <b style="font-weight: 600">Device:</b> ${getPlatform(req.headers["user-agent"] ?? "")} (${getBrowser(req.headers["user-agent"] ?? "")})
-                            					<b style="font-weight: 600">IP:</b> ${getIPAddress(req)} <br />
-                            					If this was not you, simply ignore this email or <a style="color: rgb(56,189, 248);" href="https://slotty.cc/forgot">reset your password</a>.
-                                                If you have any questions, please contact us at <a style="color: rgb(56,189, 248);" href="mailto:contact@slotty.cc">contact@slotty.cc</a>.
-                                                <br />
-                                                Sincerely,
-                                                SlottyRecovery
-                            				</p>
-                            			</div>
-                                        <div style="text-align: center; margin-top: 1rem;">
-                                            <em style="color: rb(190, 198, 213)">
-                                                Copyright &#169; 2025 SlottyRecovery. All rights reserved.
-                                            </em>
-                                        </div>
-                            		</div>
-                            	</body>
-                            </html>
-                        `,
-                        text: `Hello ${user.username},\nTo confirm that you want to change your email from ${user.email} to ${email}, enter the following code:\n${code}`,
-                    }).then(() => {
-                        console.log(`[EMAIL] [${new Date().toLocaleString()}] Confirmation code sent to ${user.email}.`);
-                    }).catch((err: any) => {
-                        console.error(err);
-                    })
                 });
 
                 return res.status(201).json({ success: true, message: "Confirmation code sent to your old email." });
@@ -437,61 +259,6 @@ async function handler(req: NextApiRequest, res: NextApiResponse, user: accounts
                 await prisma.accounts.update({
                     where: { id: user.id },
                     data: { email: email }
-                });
-
-                await axios.get(`https://ipinfo.io/${getIPAddress(req)}/json?token=${process.env.IPINFO_TOKEN}`).then(async (res) => {
-                    await Email.send({
-                        to: [user.email, email],
-                        from: {
-                            email: "no-reply@slotty.cc",
-                            name: "SlottyRecovery"
-                        },
-                        subject: "SlottyRecovery Email Changed",
-                        html:
-                        `
-                            <!DOCTYPE html>
-                            <html>
-                                <head>
-                                    <title>SlottyRecovery</title>
-                                </head>
-                                <body>
-                                    <h1 style="text-align: center; margin-top: 1.5rem; line-height: 2rem; font-size: 2.25rem; font-weight: 600; margin-bottom: 1rem; color: rgb(79, 70, 229);">
-                                        SlottyRecovery
-                                    </h1>
-                                    <div style="padding: 1rem; max-width: 30rem; margin-left: auto;margin-right: auto; width: 100%; border-radius: 0.75rem; border-width: 1px; background: rgb(250, 250, 250);">
-                                        <h2 style="color: rgb(0, 0, 0); font-size: 1.75rem; line-height: 2rem; font-weight: 600; line-height: 1.25; margin-bottom: 1rem">
-                                            Your email has been changed
-                                        </h2>
-                                        <div>
-                                            <p style="white-space: pre-line; color: rgb(0, 0, 0); font-weight: 400; margin-bottom: 0.75rem; overflow-wrap: break-word; font-size: 1rem;">
-                                                Hello ${user.username},
-                                                You email has been changed from ${user.email} to ${email} on ${new Date().toLocaleString()} (local time).
-                                                <br />
-                                                <b style="font-weight: 600">Location:</b> Near ${res.data.city ?? "Unknown"}, ${res.data.region ?? "Unknown"}, ${res.data.country ?? "Unknown"}
-                                                <b style="font-weight: 600">Device:</b> ${getPlatform(req.headers["user-agent"] ?? "")} (${getBrowser(req.headers["user-agent"] ?? "")})
-                                                <b style="font-weight: 600">IP:</b> ${getIPAddress(req)} <br />
-                                                If this was <b style="color: red">NOT</b> you, contact us immediately at <a style="color: rgb(56,189, 248);" href="mailto:contact@slotty.cc</a>!
-                                                If you have any questions, please contact us at <a style="color: rgb(56,189, 248);" href="mailto:contact@slotty.cc">contact@slotty.cc</a>.
-                                                <br />
-                                                Sincerely,
-                                                SlottyRecovery
-                                            </p>
-                                        </div>
-                                        <div style="text-align: center; margin-top: 1rem;">
-                                            <em style="color: rb(190, 198, 213)">
-                                                Copyright &#169; 2025 SlottyRecovery. All rights reserved.
-                                            </em>
-                                        </div>
-                                    </div>
-                                </body>
-                            </html>
-                        `,
-                        text: `Hello ${user.username},\nYou email has been changed from ${user.email} to ${email}.`
-                    }).then(() => {
-                        console.log(`[EMAIL] [${new Date().toLocaleString()}] Email changed for ${user.username} (${user.email})`);
-                    }).catch((err: any) => {
-                        console.error(err);
-                    })
                 });
 
                 var payments = await prisma.payments.findMany({
@@ -559,60 +326,6 @@ async function handler(req: NextApiRequest, res: NextApiResponse, user: accounts
 
                 if (!verified) return res.status(400).json({ success: false, message: "Invalid 2FA code." });
 
-                await axios.get(`https://ipinfo.io/${getIPAddress(req)}/json?token=${process.env.IPINFO_TOKEN}`).then(async (res) => {
-                    await Email.send({
-                        to: user.email,
-                        from: {
-                            email: "no-reply@slotty.cc",
-                            name: "SlottyRecovery"
-                        },
-                        subject: "SlottyRecovery Two-Factor Authentication Enabled",
-                        html:
-                            `
-                                <!DOCTYPE html>
-                                <html>
-                                	<head>
-                                		<title>SlottyRecovery</title>
-                                	</head>
-                                	<body>
-                                		<h1 style="text-align: center; margin-top: 1.5rem; line-height: 2rem; font-size: 2.25rem; font-weight: 600; margin-bottom: 1rem; color: rgb(79, 70, 229);">
-                                			SlottyRecovery
-                                		</h1>
-                                		<div style="padding: 1rem; max-width: 30rem; margin-left: auto;margin-right: auto; width: 100%; border-radius: 0.75rem; border-width: 1px; background: rgb(250, 250, 250);">
-                                            <h2 style="color: rgb(0, 0, 0); font-size: 1.75rem; line-height: 2rem; font-weight: 600; line-height: 1.25; margin-bottom: 1rem">
-                                				Two-Factor Authentication enabled
-                                			</h2>
-                                			<div>
-                                                <p style="white-space: pre-line; color: rgb(0, 0, 0); font-weight: 400; margin-bottom: 0.75rem; overflow-wrap: break-word; font-size: 1rem;">
-                                					Hello ${user.username},
-                                                    Two-Factor Authentication has been enabled on your account on ${new Date().toLocaleString()} (local time).
-                                                    <br />
-                                					<b style="font-weight: 600">Location:</b> Near ${res.data.city ?? "Unknown"}, ${res.data.region ?? "Unknown"}, ${res.data.country ?? "Unknown"}
-                                                    <b style="font-weight: 600">Device:</b> ${getPlatform(req.headers["user-agent"] ?? "")} (${getBrowser(req.headers["user-agent"] ?? "")})
-                                					<b style="font-weight: 600">IP:</b> ${getIPAddress(req)} <br />
-                                					If this was not you, contact us immediately at <a style="color: rgb(56,189, 248);" href="mailto:contact@slotty.cc">contact@slotty.cc</a> or <a style="color: rgb(56,189, 248);" href="https://t.me/SlottyRecovery">SlottyRecovery Telegram</a>.
-                                                    If you have any questions, please contact us at <a style="color: rgb(56,189, 248);" href="mailto:contact@slotty.cc">contact@slotty.cc</a>.
-                                                    <br />
-                                                    Sincerely,
-                                                    SlottyRecovery
-                                				</p>
-                                			</div>
-                                            <div style="text-align: center; margin-top: 1rem;">
-                                                <em style="color: rb(190, 198, 213)">
-                                                    Copyright &#169; 2025 SlottyRecovery. All rights reserved.
-                                                </em>
-                                            </div>
-                                		</div>
-                                	</body>
-                                </html>
-                            `,
-                    }).then(() => {
-                        console.log(`[EMAIL] [${new Date().toLocaleString()}] Sent 2FA enabled email to ${user.email}`);
-                    }).catch((err: any) => {
-                        console.error(err);
-                    })
-                });
-
                 await prisma.accounts.update({
                     where: { id: user.id },
                     data: { twoFactor: Number(1) as number }
@@ -639,60 +352,6 @@ async function handler(req: NextApiRequest, res: NextApiResponse, user: accounts
                 });
 
                 if (!verified) return res.status(400).json({ success: false, message: "Invalid 2FA code." });
-
-                await axios.get(`https://ipinfo.io/${getIPAddress(req)}/json?token=${process.env.IPINFO_TOKEN}`).then(async (res) => {
-                    await Email.send({
-                        to: user.email,
-                        from: {
-                            email: "no-reply@slotty.cc",
-                            name: "SlottyRecovery"
-                        },
-                        subject: "SlottyRecovery Two-Factor Authentication Disabled",
-                        html:
-                            `
-                            <!DOCTYPE html>
-                            <html>
-                                <head>
-                                    <title>SlottyRecovery</title>
-                                </head>
-                                <body>
-                                    <h1 style="text-align: center; margin-top: 1.5rem; line-height: 2rem; font-size: 2.25rem; font-weight: 600; margin-bottom: 1rem; color: rgb(79, 70, 229);">
-                                        SlottyRecovery
-                                    </h1>
-                                    <div style="padding: 1rem; max-width: 30rem; margin-left: auto;margin-right: auto; width: 100%; border-radius: 0.75rem; border-width: 1px; background: rgb(250, 250, 250);">
-                                        <h2 style="color: rgb(0, 0, 0); font-size: 1.75rem; line-height: 2rem; font-weight: 600; line-height: 1.25; margin-bottom: 1rem">
-                                            Two-Factor Authentication enabled
-                                        </h2>
-                                        <div>
-                                            <p style="white-space: pre-line; color: rgb(0, 0, 0); font-weight: 400; margin-bottom: 0.75rem; overflow-wrap: break-word; font-size: 1rem;">
-                                                Hello ${user.username},
-                                                Two-Factor Authentication has been enabled on your account on ${new Date().toLocaleString()} (local time).
-                                                <br />
-                                                <b style="font-weight: 600">Location:</b> Near ${res.data.city ?? "Unknown"}, ${res.data.region ?? "Unknown"}, ${res.data.country ?? "Unknown"}
-                                                <b style="font-weight: 600">Device:</b> ${getPlatform(req.headers["user-agent"] ?? "")} (${getBrowser(req.headers["user-agent"] ?? "")})
-                                                <b style="font-weight: 600">IP:</b> ${getIPAddress(req)} <br />
-                                                If this was not you, contact us immediately at <a style="color: rgb(56,189, 248);" href="mailto:contact@slotty.cc">contact@slotty.cc</a> or <a style="color: rgb(56,189, 248);" href="https://t.me/SlottyRecovery">SlottyRecovery Telegram</a>.
-                                                If you have any questions, please contact us at <a style="color: rgb(56,189, 248);" href="mailto:contact@slotty.cc">contact@slotty.cc</a>.
-                                                <br />
-                                                Sincerely,
-                                                SlottyRecovery
-                                            </p>
-                                        </div>
-                                        <div style="text-align: center; margin-top: 1rem;">
-                                            <em style="color: rb(190, 198, 213)">
-                                                Copyright &#169; 2025 SlottyRecovery. All rights reserved.
-                                            </em>
-                                        </div>
-                                    </div>
-                                </body>
-                            </html>
-                            `,
-                    }).then(() => {
-                        console.log(`[EMAIL] [${new Date().toLocaleString()}] Sent 2FA disabled email to ${user.email}`);
-                    }).catch((err: any) => {
-                        console.error(err);
-                    })
-                });
 
                 await prisma.accounts.update({
                     where: { id: user.id },
