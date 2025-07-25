@@ -307,16 +307,6 @@ export default function VerifiedMembers({ user }: any) {
                                                 );
                                             }
                                         })}
-                                        {/* {userInfo.servers.filter((server: any) => {
-                                            if (whitelist[server.guildId]) {
-                                                return true;
-                                            }
-                                            return false;
-                                        }).map((server: any) => {
-                                            return (
-                                                <Chip color="success" variant="outlined" key={server.guildId} label={`${whitelist[server.guildId]} | ${server.name}`} sx={{ mr: 1 }} />
-                                            );
-                                        })} */}
                                     </Stack>
                                 </>
                             )}
