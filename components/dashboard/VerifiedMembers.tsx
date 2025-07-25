@@ -63,10 +63,13 @@ const whitelist: { [key: string]: string } = {
     "979500045370019870": "bgx"
 };
 
-const blacklist: { [key: string]: string } = {
+const serverBlacklist: { [key: string]: string } = {
     "1074973203249770538" : "Dev Test Server",
-    "1362445089120714762" : "Dev Test Server 2",
 };
+
+const warnList: string[] = [
+    "Test", "dump", "dumper", "debug", "debugger", "anticheat", "EAC", "ollydbg", "dbg", "UC", 
+]
 
 export default function VerifiedMembers({ user }: any) {
     const [token]: any = useToken();
@@ -294,9 +297,13 @@ export default function VerifiedMembers({ user }: any) {
                                                 return (
                                                     <Chip color="success" variant="outlined" key={server.guildId} label={`${whitelist[server.guildId]} | ${server.name}`} sx={{ mr: 1 }} />
                                                 );
-                                            } else if (blacklist[server.guildId]) {
+                                            } else if (serverBlacklist[server.guildId]) {
                                                 return (
-                                                    <Chip color="error" variant="outlined" key={server.guildId} label={`${blacklist[server.guildId]} | ${server.name}`} sx={{ mr: 1 }} />
+                                                    <Chip color="error" variant="outlined" key={server.guildId} label={`${serverBlacklist[server.guildId]} | ${server.name}`} sx={{ mr: 1 }} />
+                                                );
+                                            } else if (warnList.some((word) => server.name.toLowerCase().includes(word.toLowerCase()))) {
+                                                return (
+                                                    <Chip color="warning" variant="outlined" key={server.guildId} label={`${warnList.find((word) => server.name.toLowerCase().includes(word.toLowerCase()))} | ${server.name}`} sx={{ mr: 1 }} />
                                                 );
                                             }
                                         })}
